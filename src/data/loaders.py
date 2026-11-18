@@ -35,6 +35,15 @@ def _read(path: Path, columns: int, *, integer: bool = False) -> np.ndarray:
     return values
 
 
+def load_reference(directory: str | Path, number_of_arcs: int) -> np.ndarray:
+    """Server/development-only reference validation; never an inference feature."""
+    directory = Path(directory)
+    route = _read(directory / f'{directory.name}.route', 1, integer=True).ravel()
+    if (route >= number_of_arcs).any():
+        raise DataValidationError(f'{directory.name}: route references nonexistent arc')
+    return route
+
+
 def load_trip(directory: str | Path, *, include_reference: bool = False) -> Trip:
     directory = Path(directory)
     trip_id = directory.name
@@ -52,9 +61,7 @@ def load_trip(directory: str | Path, *, include_reference: bool = False) -> Trip
         raise DataValidationError(f'{trip_id}: arc references nonexistent node')
     route = None
     if include_reference:
-        route = _read(directory / f'{trip_id}.route', 1, integer=True).ravel()
-        if (route >= len(arcs)).any():
-            raise DataValidationError(f'{trip_id}: route references nonexistent arc')
+        route = load_reference(directory, len(arcs))
     return Trip(trip_id, track, nodes, arcs, route)
 
 

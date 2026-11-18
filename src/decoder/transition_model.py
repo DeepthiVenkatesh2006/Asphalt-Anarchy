@@ -100,10 +100,8 @@ def calculate_transition_probability(
                 previous_arc_id == current_arc_id
                 and previous_from == current_from
                 and previous_to == current_to
+                and current_projection_ratio >= previous_projection_ratio
             ):
-                if current_projection_ratio < previous_projection_ratio:
-                    continue
-
                 road_distance = (
                     current_projection_ratio
                     - previous_projection_ratio

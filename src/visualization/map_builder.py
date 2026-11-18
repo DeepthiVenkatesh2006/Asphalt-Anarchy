@@ -4,12 +4,15 @@ from typing import Dict, Any
 
 def build_folium_map(
     trip_result: Dict[str, Any],
-    output_html_path: str = None
+    output_html_path: str = None,
+    *, include_reference: bool = False
 ) -> folium.Map:
     track = trip_result["track"]
     nodes = trip_result["nodes"]
     arcs = trip_result["arcs"]
-    route = []  # Reference geometry stays server-side.
+    if include_reference and trip_result.get('partition') not in {'train', 'student_test'}:
+        raise ValueError('Reference maps are permitted only for development partitions')
+    route = trip_result.get('route', []) if include_reference else []
     predicted_route = trip_result.get("condensed_route", trip_result["predicted_route"])
     metrics = trip_result.get("metrics", {})
     trip_id = trip_result.get("trip_id", "Unknown")
@@ -30,7 +33,7 @@ def build_folium_map(
 
     # 1. Road Network Layer
     relevant_arc_ids = set(predicted_route) | set(route)
-    road_layer = folium.FeatureGroup(name="1. Road Network (Local Arcs)", show=False)
+    road_layer = folium.FeatureGroup(name="1. Road Network (Local Arcs)", show=True)
     for arc_id in list(relevant_arc_ids)[:2000]:
         if 0 <= arc_id < len(arcs):
             u, v = arcs[arc_id]
@@ -52,7 +55,7 @@ def build_folium_map(
         lon, lat, ts = track[i]
         folium.CircleMarker(
             location=[lat, lon],
-            radius=3.5,
+            radius=2.0 if include_reference else 3.5,
             color="#e63946",
             fill=True,
             fill_color="#e63946",
@@ -78,14 +81,13 @@ def build_folium_map(
         for arc_id in route:
             if 0 <= arc_id < len(arcs):
                 u, v = arcs[arc_id]
-                gt_segments.append([nodes[u][1], nodes[u][0]])
-                gt_segments.append([nodes[v][1], nodes[v][0]])
+                gt_segments.append([[nodes[u][1], nodes[u][0]], [nodes[v][1], nodes[v][0]]])
         if gt_segments:
             folium.PolyLine(
                 gt_segments,
                 color="#2a9d8f",
-                weight=5,
-                opacity=0.85,
+                weight=8,
+                opacity=0.75,
                 tooltip="Ground Truth Route"
             ).add_to(gt_layer)
         gt_layer.add_to(m)
@@ -115,10 +117,11 @@ def build_folium_map(
     m.fit_bounds([[min(lats), min(lons)], [max(lats), max(lons)]])
 
     # Floating Summary Card
-    acc = metrics.get("top1_accuracy")
+    acc = metrics.get("point_accuracy", metrics.get("top1_accuracy"))
     acc_display = f"{acc * 100:.1f}%" if acc is not None else "N/A"
     cont = metrics.get("route_continuity", 0.0) * 100.0
     lat_ms = metrics.get("inference_time_ms", 0.0)
+    reference_legend = '<div style="color:#2a9d8f">Green: development reference route</div>' if route else ''
     legend_html = f"""
     <div style="
         position: fixed;
@@ -139,8 +142,9 @@ def build_folium_map(
         <div><span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#e63946; margin-right:6px;"></span> Raw GPS Observations ({len(track)})</div>
         <div><span style="display:inline-block; width:18px; height:4px; background:#1d3557; margin-right:6px; vertical-align:middle;"></span> PathSnap Predicted Route</div>
         <div><span style="display:inline-block; width:18px; height:2px; background:#6c757d; margin-right:6px; vertical-align:middle;"></span> Local Road Arcs</div>
+        {reference_legend}
         <hr style="margin: 8px 0; border:0; border-top: 1px solid #ddd;">
-        <div><b>Top-1 Accuracy:</b> <span style="color:#2a9d8f; font-weight:bold;">{acc_display}</span></div>
+        <div><b>Returned point accuracy:</b> <span style="color:#2a9d8f; font-weight:bold;">{acc_display}</span></div>
         <div><b>Route Continuity:</b> <span style="color:#1d3557; font-weight:bold;">{cont:.1f}%</span></div>
         <div><b>Inference Latency:</b> {lat_ms:.1f} ms</div>
     </div>

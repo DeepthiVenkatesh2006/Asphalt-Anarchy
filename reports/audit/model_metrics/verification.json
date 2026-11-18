@@ -1,0 +1,16 @@
+{
+  "model_hashes": {
+    "logistic_baseline.joblib": "919af29ac756b3e4f5d7f52b19d7fb58ea7e7d19ca85c7b2683c040108f96eed",
+    "knn_baseline.joblib": "dd92497a492abff2c13f20a750585e724f612596cc7580398f108b6630d8242d",
+    "forest_baseline.joblib": "cb2b83b0b58f1ae1222ef686cd687f89461c40625eeb1eaac63362353fe11613",
+    "histboost_baseline.joblib": "60c35586a91f2e9425940b6396b795421f1fb73137c2fe3e4c152682f36a23b6",
+    "mlp_baseline.joblib": "564239ef6fb6264d1722a176aa0a9d480016ae8a027d58c6bd8c8c2ed052fcce",
+    "mlp_tuned.joblib": "84fab7ce6d3607346204e3d849caec8c630d1f5d9a2f08ca7cfa1ff132977e16"
+  },
+  "all_original_primary_metrics_reproduced": true,
+  "partition": "student_test",
+  "model_fitting_performed": false,
+  "evaluator_data_read": false,
+  "confusion_matrix_scope": "binary candidate rows with eligible derived reference labels; threshold >0.5",
+  "macro_scope": "per-trip road-ID precision/recall/F1 then average over ten trips"
+}

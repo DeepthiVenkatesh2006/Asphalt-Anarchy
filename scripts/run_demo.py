@@ -22,10 +22,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--role', choices=['local', 'api', 'ui'], default='local')
     parser.add_argument('--api-url', default='http://127.0.0.1:8000')
+    parser.add_argument('--mode', choices=['development','evaluation'], default=None)
     parser.add_argument('--data-root', help='Folder containing train, student_test and evaluator_test')
     args = parser.parse_args()
     env = os.environ.copy()
     env['PYTHONPATH'] = str(ROOT)
+    mode = args.mode or ('evaluation' if args.role == 'api' else 'development')
+    env['PATHSNAP_MODE'] = mode
     env['PATHSNAP_API_URL'] = args.api_url.rstrip('/')
     env.setdefault('OMP_NUM_THREADS', '2')
     env.setdefault('OPENBLAS_NUM_THREADS', '2')
@@ -38,6 +41,13 @@ def main():
         trips = service.list_available_trips()
         if not trips:
             raise SystemExit('No trips found. Supply --data-root pointing to the folder containing train/student_test/evaluator_test.')
+        if mode == 'evaluation':
+            evaluation_trips = [t for t in trips if t['partition']=='evaluator_test']
+            if len(evaluation_trips) != 10 or not all(t['reference_valid'] for t in evaluation_trips):
+                raise SystemExit('Evaluation mode requires ten valid evaluator_test trips with server-side references.')
+        invalid = [e for e in service.catalog_errors if mode != 'evaluation' or e['partition']=='evaluator_test']
+        if invalid:
+            raise SystemExit(f'Invalid trip files found: {invalid}')
         print(f'Preflight passed: model loaded, {len(trips)} trips at {service.data_root}', flush=True)
     commands = []
     if args.role in ['local', 'api']:

@@ -1,0 +1,20 @@
+{
+  "format_version": 1,
+  "files": [
+    {
+      "path": "model_final.joblib",
+      "size_bytes": 77153,
+      "sha256": "84fab7ce6d3607346204e3d849caec8c630d1f5d9a2f08ca7cfa1ff132977e16"
+    },
+    {
+      "path": "feature_columns.json",
+      "size_bytes": 185,
+      "sha256": "6a49a7e1d847101f267dd07d10a6bbca3caa42cf9272bee2a01ecef8953333aa"
+    },
+    {
+      "path": "model_metadata.json",
+      "size_bytes": 2720,
+      "sha256": "309a355ffbc97fe8929a729fc9b3729a8aeb68e1d8023f0d1c82a7bc57088f5e"
+    }
+  ]
+}

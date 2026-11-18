@@ -1,22 +1,8 @@
-server:
-  host: "0.0.0.0"
-  port: 8000
-  title: "Asphalt-Anarchy PathSnap API"
-  version: "1.0.0"
-
-data:
-  root_dir: "../../Student folder"
-  train_partition: "train"
-  test_partition: "student_test"
-  evaluator_partition: "evaluator_test"
-
-artifacts:
-  model_weights: "artifacts/local_training/model_final.joblib"
-  model_metadata: "artifacts/local_training/model_metadata.json"
-  maps_dir: "artifacts/maps"
-
+# Actual runtime algorithm configuration. API reads and validates this file.
+# Dataset/model locations: --data-root / PATHSNAP_DATA_ROOT / PATHSNAP_MODEL_PATH.
+# Ports and host bindings are controlled by scripts/run_demo.py, not this file.
 inference:
   search_radius_meters: 50.0
   max_candidates_per_point: 8
   gap_threshold_s: 60.0
-  beta_transition: 12.0
+  beta_transition: 50.0

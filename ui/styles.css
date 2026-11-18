@@ -412,3 +412,23 @@ iframe#map-frame {
   color: var(--text-muted);
   text-align: center;
 }
+
+/* Laptop and phone clients use the same API; keep controls usable on narrow screens. */
+.sidebar, .content-pane, .card, .map-container { min-width: 0; }
+@media (max-width: 900px) {
+  .main-container { grid-template-columns: minmax(0, 1fr); padding: 16px; gap: 16px; }
+  .app-header, .header-left, .header-right, .input-group, .map-header { flex-wrap: wrap; }
+  .app-header { padding: 16px; gap: 12px; }
+  .metrics-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .map-wrapper { min-width: 0; }
+  #map-frame { width: 100%; }
+  .connection-pill { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+  .input-group input { min-width: 0; width: 100%; }
+}
+@media (max-width: 420px) {
+  .main-container { padding: 10px; }
+  .card { padding: 14px; }
+  .metrics-grid { gap: 8px; }
+  .metric-value { font-size: 1.6rem; }
+  .meta-row { gap: 8px; overflow-wrap: anywhere; }
+}

@@ -1,0 +1,22 @@
+# Verified runtime versions for the trusted trained bundle. Python >=3.12 required.
+-r requirements-training-lock.txt
+fastapi==0.163.2
+uvicorn==0.54.0
+pydantic==2.14.3
+starlette==1.10.0
+httpx==0.28.1
+httpcore==1.0.9
+streamlit==1.67.0
+networkx==3.7
+altair==6.3.0
+pillow==13.0.0
+protobuf==7.36.2
+pydeck==0.9.3
+typing-extensions==4.16.0
+typing-inspection==0.4.5
+pydantic-core==2.50.4
+annotated-types==0.8.0
+annotated-doc==0.0.6
+anyio==4.16.0
+h11==0.16.0
+click==8.5.0

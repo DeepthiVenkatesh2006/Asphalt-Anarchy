@@ -11,6 +11,7 @@
   const gpsLayer = L.featureGroup().addTo(map);
   const endpoints = L.featureGroup().addTo(map);
   const bounds = L.latLngBounds([]);
+  const gpsBounds = L.latLngBounds([]);
   const segments = data.predicted_segments || [];
   segments.forEach((segment, index) => {
     if (segment.length < 2) return;
@@ -21,16 +22,18 @@
   const gps = data.gps_coords || [];
   const step = Math.max(1, Math.ceil(gps.length / 1200));
   gps.forEach((point, index) => {
-    bounds.extend(point);
+    gpsBounds.extend(point);
     if (index % step !== 0 && index !== gps.length - 1) return;
     L.circleMarker(point, {radius: 3, color: '#2563eb', weight: 1, fillOpacity: .7})
       .bindTooltip(`GPS observation ${index}`).addTo(gpsLayer);
   });
-  if (segments.length) {
-    const start = segments[0][0];
-    const last = segments[segments.length - 1];
-    const end = last[last.length - 1];
-    [[start, '#15803d', 'Start'], [end, '#dc2626', 'End']].forEach(([point, color, label]) => {
+  const matched = (data.matched_coords || []).filter(point => point !== null);
+  if (matched.length || segments.length) {
+    const lastSegment = segments[segments.length - 1];
+    const start = matched.length ? matched[0] : segments[0][0];
+    const end = matched.length ? matched[matched.length - 1] : lastSegment[lastSegment.length - 1];
+    const names = matched.length ? ['First matched GPS', 'Last matched GPS'] : ['First road endpoint', 'Last road endpoint'];
+    [[start, '#15803d', names[0]], [end, '#dc2626', names[1]]].forEach(([point, color, label]) => {
       L.circleMarker(point, {radius: 8, color: '#fff', weight: 3, fillColor: color, fillOpacity: 1})
         .bindTooltip(label, {permanent: true, direction: 'top'}).addTo(endpoints);
     });
@@ -57,7 +60,8 @@
   }, {collapsed: false}).addTo(map);
   L.control.scale({imperial: false}).addTo(map);
   function fit() {
-    if (bounds.isValid()) map.fitBounds(bounds, {padding: [35, 35], maxZoom: 17});
+    const target = bounds.isValid() ? bounds : gpsBounds;
+    if (target.isValid()) map.fitBounds(target, {padding: [35, 35], maxZoom: 17});
   }
   document.getElementById('fit-route').addEventListener('click', fit);
   document.getElementById('full-screen').addEventListener('click', async () => {

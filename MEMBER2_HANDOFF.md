@@ -1,3 +1,5 @@
+> Current audit update: the scorer now checks artifact hashes and exact scikit-learn compatibility. Canonical training writes the manifest automatically. Use the pinned runtime, current source/tests and consolidated PDF; earlier attached test counts refer to their historical package snapshots.
+
 # Complete Member 2 implementation and results
 
 This handoff contains the completed local training run, source, tests, inference pipeline and Member 3 scoring interface. It contains no raw/processed dataset files or virtual environment. Extract it at a repository root or merge its directories into your own branch without discarding your changes.
