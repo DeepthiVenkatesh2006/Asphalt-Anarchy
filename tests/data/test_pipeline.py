@@ -118,3 +118,17 @@ def test_rejects_nonfinite_preparation_limits(tmp_path, parameter):
     trip = load_trip(write_trip(tmp_path))
     with pytest.raises(ValueError):
         prepare_trip(trip, **{parameter: float('nan')})
+
+
+def test_presentation_map_uses_supplied_roads_without_remote_tiles(tmp_path):
+    from src.data.eda_inspector import make_map
+    trip = load_trip(write_trip(tmp_path), include_reference=True)
+    output = tmp_path / 'trip.html'
+    make_map(trip, output)
+    html = output.read_text()
+    assert 'tile.openstreetmap.org' not in html
+    assert 'L.tileLayer(' not in html
+    assert 'Road network background' in html
+    assert 'Reference route (development only)' in html
+    assert 'Raw GPS observations' in html
+    assert 'Provided road network' in html

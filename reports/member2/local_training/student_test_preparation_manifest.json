@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "data_partition": "student_test",
+  "label_warning": "Approximate reference alignment; not independently verified point ground truth.",
+  "feature_columns": [
+    "distance_m",
+    "heading_delta_deg",
+    "projection_ratio",
+    "distance_rank",
+    "segment_length_m",
+    "speed_mps",
+    "dt_s",
+    "heading_valid",
+    "gap_before",
+    "zero_length_arc"
+  ],
+  "radius_m": 50,
+  "max_candidates": 8,
+  "gap_s": 60,
+  "reference_radius_m": 100,
+  "include_labels": true,
+  "alignment_config": {
+    "method": "monotone_reference_v1",
+    "max_candidates": 8,
+    "max_label_distance_m": 50.0,
+    "ambiguity_margin_m": 3.0,
+    "heading_cost_m_per_degree": 0.05,
+    "route_advance_cost_m": 0.01
+  },
+  "projections": {
+    "00000000": "+proj=aeqd +lat_0=56.177113 +lon_0=54.54435552092109 +datum=WGS84 +units=m +type=crs",
+    "00000007": "+proj=aeqd +lat_0=43.411001 +lon_0=77.22932826201858 +datum=WGS84 +units=m +type=crs",
+    "00000009": "+proj=aeqd +lat_0=42.651654 +lon_0=13.663229355462798 +datum=WGS84 +units=m +type=crs",
+    "00000040": "+proj=aeqd +lat_0=55.310227 +lon_0=61.149076203805194 +datum=WGS84 +units=m +type=crs",
+    "00000052": "+proj=aeqd +lat_0=56.809715499999996 +lon_0=35.875815847310456 +datum=WGS84 +units=m +type=crs",
+    "00000056": "+proj=aeqd +lat_0=44.859126 +lon_0=-93.3898642492839 +datum=WGS84 +units=m +type=crs",
+    "00000065": "+proj=aeqd +lat_0=53.517868 +lon_0=49.300811363507 +datum=WGS84 +units=m +type=crs",
+    "00000076": "+proj=aeqd +lat_0=56.291676 +lon_0=43.99760545018592 +datum=WGS84 +units=m +type=crs",
+    "00000077": "+proj=aeqd +lat_0=61.669172 +lon_0=50.82101331533172 +datum=WGS84 +units=m +type=crs",
+    "00000091": "+proj=aeqd +lat_0=47.0802645 +lon_0=2.4273040045626604 +datum=WGS84 +units=m +type=crs"
+  },
+  "trips": [
+    {
+      "trip_id": "00000000",
+      "observations": 2503,
+      "candidates": 9902,
+      "no_candidate_observations": 0,
+      "eligible_observations": 2301,
+      "known_reference_observations": 2503,
+      "candidate_misses": 5,
+      "alignment_status": {
+        "aligned": 2303,
+        "ambiguous": 200
+      }
+    },
+    {
+      "trip_id": "00000007",
+      "observations": 1354,
+      "candidates": 4574,
+      "no_candidate_observations": 0,
+      "eligible_observations": 1280,
+      "known_reference_observations": 1354,
+      "candidate_misses": 0,
+      "alignment_status": {
+        "aligned": 1280,
+        "ambiguous": 74
+      }
+    },
+    {
+      "trip_id": "00000009",
+      "observations": 1049,
+      "candidates": 7929,
+      "no_candidate_observations": 0,
+      "eligible_observations": 598,
+      "known_reference_observations": 1049,
+      "candidate_misses": 25,
+      "alignment_status": {
+        "aligned": 601,
+        "ambiguous": 448
+      }
+    },
+    {
+      "trip_id": "00000040",
+      "observations": 2995,
+      "candidates": 12808,
+      "no_candidate_observations": 0,
+      "eligible_observations": 2613,
+      "known_reference_observations": 2995,
+      "candidate_misses": 0,
+      "alignment_status": {
+        "aligned": 2613,
+        "ambiguous": 382
+      }
+    },
+    {
+      "trip_id": "00000052",
+      "observations": 262,
+      "candidates": 1703,
+      "no_candidate_observations": 0,
+      "eligible_observations": 201,
+      "known_reference_observations": 262,
+      "candidate_misses": 0,
+      "alignment_status": {
+        "aligned": 201,
+        "ambiguous": 61
+      }
+    },
+    {
+      "trip_id": "00000056",
+      "observations": 3958,
+      "candidates": 26617,
+      "no_candidate_observations": 0,
+      "eligible_observations": 2528,
+      "known_reference_observations": 3955,
+      "candidate_misses": 26,
+      "alignment_status": {
+        "aligned": 2528,
+        "ambiguous": 1403,
+        "distant": 23,
+        "unmatched": 3,
+        "restart": 1
+      }
+    },
+    {
+      "trip_id": "00000065",
+      "observations": 768,
+      "candidates": 5537,
+      "no_candidate_observations": 0,
+      "eligible_observations": 514,
+      "known_reference_observations": 768,
+      "candidate_misses": 1,
+      "alignment_status": {
+        "aligned": 515,
+        "ambiguous": 253
+      }
+    },
+    {
+      "trip_id": "00000076",
+      "observations": 1486,
+      "candidates": 11129,
+      "no_candidate_observations": 0,
+      "eligible_observations": 934,
+      "known_reference_observations": 1486,
+      "candidate_misses": 12,
+      "alignment_status": {
+        "aligned": 935,
+        "ambiguous": 551
+      }
+    },
+    {
+      "trip_id": "00000077",
+      "observations": 3911,
+      "candidates": 27319,
+      "no_candidate_observations": 0,
+      "eligible_observations": 2601,
+      "known_reference_observations": 3911,
+      "candidate_misses": 13,
+      "alignment_status": {
+        "aligned": 2606,
+        "ambiguous": 1305
+      }
+    },
+    {
+      "trip_id": "00000091",
+      "observations": 874,
+      "candidates": 6121,
+      "no_candidate_observations": 0,
+      "eligible_observations": 633,
+      "known_reference_observations": 874,
+      "candidate_misses": 0,
+      "alignment_status": {
+        "aligned": 633,
+        "ambiguous": 241
+      }
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "train/train_features.parquet": {
+    "bytes": 32520238,
+    "sha256": "fb2000e1dfa1a3cc61c753f054912f744195949e67d867bfbb7c4505c781b1a2"
+  },
+  "train/candidates.parquet": {
+    "bytes": 39364887,
+    "sha256": "4789f8f5593dec85296992f89f76a39a35ba7511329599226ec35c1fd8a6c3a9"
+  },
+  "train/reference_labels.parquet": {
+    "bytes": 4311966,
+    "sha256": "77779ddc6fb8b2a720689ebb12fa21624f50ad3df4773ed3666c75b40bf08b9c"
+  },
+  "train/manifest.json": {
+    "bytes": 36565,
+    "sha256": "fbf4b86af47c0d5c72b095cfccd35cdc73a7f292247ebdf1026ce72ff6e20fdf"
+  },
+  "train/feature_columns.json": {
+    "bytes": 185,
+    "sha256": "6a49a7e1d847101f267dd07d10a6bbca3caa42cf9272bee2a01ecef8953333aa"
+  },
+  "student_test/train_features.parquet": {
+    "bytes": 3236071,
+    "sha256": "cf8010dc1997e345dfd36248268d91796c5f3537ed1ab2e1541fbe273295f64c"
+  },
+  "student_test/candidates.parquet": {
+    "bytes": 4112514,
+    "sha256": "340491d3bb5617a0d017186842616340e705432ea67acb33b18f6966ed268c4a"
+  },
+  "student_test/reference_labels.parquet": {
+    "bytes": 434119,
+    "sha256": "1c83efa291250a5cde05c57d5b9aea9a58ea055d5418e2f3bf8bb3b5de728051"
+  },
+  "student_test/manifest.json": {
+    "bytes": 5187,
+    "sha256": "3872f2782198878cbed1e76d53cc44e3c4601dbc3e412b32c38b97c243642c38"
+  },
+  "student_test/feature_columns.json": {
+    "bytes": 185,
+    "sha256": "6a49a7e1d847101f267dd07d10a6bbca3caa42cf9272bee2a01ecef8953333aa"
+  }
+}
