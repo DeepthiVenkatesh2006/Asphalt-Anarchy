@@ -1,8 +1,8 @@
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Literal
 from pydantic import BaseModel, Field
 
 class TripSummary(BaseModel):
-    trip_id: str = Field(..., description="Unique trip identifier")
+    trip_id: str = Field(..., pattern=r'^[0-9]{8}$', description="Unique trip identifier")
     partition: str = Field(..., description="Dataset partition: 'train' or 'student_test'")
     points: int = Field(..., description="Number of GPS observations")
     nodes: int = Field(..., description="Number of road network nodes")
@@ -16,19 +16,24 @@ class TripsListResponse(BaseModel):
     trips: List[TripSummary]
 
 class EvaluationRequest(BaseModel):
-    trip_id: str = Field(..., description="Trip ID to evaluate (e.g. '00000000')")
-    partition: str = Field("student_test", description="Dataset partition to fetch trip from")
-    search_radius_m: Optional[float] = Field(50.0, description="Spatial candidate radius in meters")
+    trip_id: str = Field(..., pattern=r'^[0-9]{8}$', description="Trip ID to evaluate (e.g. '00000000')")
+    partition: Literal["train", "student_test", "evaluator_test"] = Field("student_test", description="Dataset partition to fetch trip from")
+    search_radius_m: float = Field(50.0, gt=0, le=1000, description="Spatial candidate radius in meters")
     use_viterbi: Optional[bool] = Field(True, description="Whether to apply HMM/Viterbi route decoding")
 
 class EvaluationMetrics(BaseModel):
+    evaluation_observations: int = 0
+    evaluation_coverage: Optional[float] = None
+    unmatched_observations: int = 0
+    decoder_restarts: int = 0
+    evaluation_note: str = ""
     total_observations: int = Field(..., description="Total GPS observation count")
-    top1_accuracy: float = Field(..., description="Observation-level Top-1 Arc Accuracy")
+    top1_accuracy: Optional[float] = Field(None, description="Observation-level Top-1 Arc Accuracy")
     route_continuity: float = Field(..., description="Percentage of consecutive predicted arcs connected in road graph")
-    candidate_miss_rate: float = Field(..., description="Percentage of observations where true arc was not in candidate set")
+    candidate_miss_rate: Optional[float] = Field(None, description="Percentage of observations where true arc was not in candidate set")
     sequence_length: int = Field(..., description="Length of predicted sequence")
     ground_truth_length: int = Field(..., description="Length of ground truth route")
-    sequence_f1: float = Field(..., description="Sequence-level F1 score against ground truth")
+    sequence_f1: Optional[float] = Field(None, description="Sequence-level F1 score against ground truth")
     inference_time_ms: float = Field(..., description="Total pipeline latency in milliseconds")
 
 class EvaluationResponse(BaseModel):
@@ -42,8 +47,9 @@ class EvaluationResponse(BaseModel):
     message: str = "Evaluation completed successfully."
 
 class PredictRequest(BaseModel):
-    trip_id: str = Field(..., description="Trip identifier")
-    partition: Optional[str] = Field("student_test", description="Dataset partition")
+    search_radius_m: float = Field(50.0, gt=0, le=1000)
+    trip_id: str = Field(..., pattern=r'^[0-9]{8}$', description="Trip identifier")
+    partition: Literal["train", "student_test", "evaluator_test"] = Field("student_test", description="Dataset partition")
     use_viterbi: Optional[bool] = Field(True, description="Enable Viterbi decoding")
 
 class PredictResponse(BaseModel):
@@ -51,6 +57,8 @@ class PredictResponse(BaseModel):
     partition: str = "student_test"
     status: str = "success"
     predicted_arcs: List[int]
+    expanded_route: List[int] = Field(default_factory=list)
+    predicted_segments: List[List[List[float]]] = Field(default_factory=list)
     predicted_coords: List[List[float]] = Field(default_factory=list, description="Ordered [[lat, lon], ...] along predicted road segments")
     total_arcs: int
     route_continuity: float

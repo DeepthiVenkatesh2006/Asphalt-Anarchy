@@ -1,0 +1,18 @@
+....................................................................     [100%]
+=============================== warnings summary ===============================
+tests/models/test_local_training.py::test_all_five_models_accept_small_binary_training_set[histboost]
+  /Users/pranav/Downloads/PathSnap_student_materials/Asphalt-Anarchy/.venv/lib/python3.15/site-packages/joblib/externals/loky/backend/context.py:134: UserWarning: Could not find the number of physical cores for the following reason:
+  invalid literal for int() with base 10: ''
+  Returning the number of logical cores instead. You can silence this warning by setting LOKY_MAX_CPU_COUNT to the number of cores you want to use.
+    warnings.warn(
+
+tests/models/test_local_training.py::test_all_five_models_accept_small_binary_training_set[mlp]
+  /Users/pranav/Downloads/PathSnap_student_materials/Asphalt-Anarchy/.venv/lib/python3.15/site-packages/sklearn/neural_network/_multilayer_perceptron.py:695: UserWarning: Got `batch_size` less than 1 or larger than sample size. It is going to be clipped
+    warnings.warn(
+
+tests/models/test_local_training.py::test_all_five_models_accept_small_binary_training_set[mlp]
+  /Users/pranav/Downloads/PathSnap_student_materials/Asphalt-Anarchy/.venv/lib/python3.15/site-packages/sklearn/neural_network/_multilayer_perceptron.py:785: ConvergenceWarning: Stochastic Optimizer: Maximum iterations (5) reached and the optimization hasn't converged yet.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+68 passed, 3 warnings in 27.04s

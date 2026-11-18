@@ -1,0 +1,23 @@
+{
+  "tool": "streamlit.testing.v1.AppTest",
+  "backend": "http://127.0.0.1:8000",
+  "partition": "evaluator_test",
+  "trip_id": "00000023",
+  "predict_button": "passed",
+  "exceptions": 0,
+  "metrics": {
+    "evaluation_observations": 399,
+    "evaluation_coverage": 0.87117903930131,
+    "unmatched_observations": 0,
+    "decoder_restarts": 0,
+    "evaluation_note": "Approximate aligned reference labels; road-set F1 is order-insensitive.",
+    "total_observations": 458,
+    "top1_accuracy": 0.9874686716791979,
+    "route_continuity": 1.0,
+    "candidate_miss_rate": 0.002506265664160401,
+    "sequence_length": 142,
+    "ground_truth_length": 59,
+    "sequence_f1": 0.6900584795321637,
+    "inference_time_ms": 1373.614791984437
+  }
+}

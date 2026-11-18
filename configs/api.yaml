@@ -5,13 +5,14 @@ server:
   version: "1.0.0"
 
 data:
-  root_dir: "../PathSnap/Student folder"
+  root_dir: "../../Student folder"
   train_partition: "train"
   test_partition: "student_test"
+  evaluator_partition: "evaluator_test"
 
 artifacts:
-  model_weights: "artifacts/model_final.joblib"
-  model_metadata: "artifacts/model_metadata.json"
+  model_weights: "artifacts/local_training/model_final.joblib"
+  model_metadata: "artifacts/local_training/model_metadata.json"
   maps_dir: "artifacts/maps"
 
 inference:

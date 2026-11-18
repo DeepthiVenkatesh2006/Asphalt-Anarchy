@@ -98,7 +98,7 @@ with st.sidebar:
     st.subheader("🌐 Laptop 1 Backend Connection")
     backend_url = st.text_input(
         "FastAPI Server URL",
-        value=st.session_state.get("backend_url", "http://localhost:8000"),
+        value=st.session_state.get("backend_url", os.environ.get("PATHSNAP_API_URL", "http://localhost:8000")),
         help="On Laptop 2, enter Laptop 1's LAN IP address, e.g. http://192.168.1.105:8000"
     ).rstrip("/")
     st.session_state["backend_url"] = backend_url
@@ -156,22 +156,13 @@ with st.sidebar:
         except Exception as e:
             st.error(f"Failed to fetch trips: {e}")
 
-    # Fallback default trips if offline
     if not trips_list:
-        default_ids = ["00000000", "00000007", "00000052", "00000059", "00000063"]
-        trips_list = [{"trip_id": tid, "partition": "student_test", "points": 2500, "arcs": 2500, "nodes": 1200, "duration_sec": 2500.0} for tid in default_ids]
-
-    partition_choice = st.radio(
-        "Dataset Partition",
-        options=["student_test (Evaluator)", "train (Training Pool)"],
-        index=0,
-        help="Evaluator tests are evaluated from the reserved student_test partition."
-    )
-    chosen_partition = "student_test" if "student_test" in partition_choice else "train"
+        st.info("No trips are available. Check the API connection and its dataset folder.")
+        st.stop()
+    partitions = [p for p in ["evaluator_test", "student_test", "train"] if any(t.get("partition") == p for t in trips_list)]
+    chosen_partition = st.radio("Dataset Partition", options=partitions, index=0)
 
     filtered_trips = [t for t in trips_list if t.get("partition") == chosen_partition]
-    if not filtered_trips:
-        filtered_trips = trips_list
 
     trip_options = [t["trip_id"] for t in filtered_trips]
     selected_trip_id = st.selectbox(
@@ -213,6 +204,8 @@ action_col1, action_col2 = st.columns([1, 4])
 with action_col1:
     predict_clicked = st.button("🚀 Predict Route", type="primary", use_container_width=True)
 
+request_key = (backend_url, chosen_partition, selected_trip_id, use_viterbi, search_radius)
+
 # State container for prediction results
 if "prediction_result" not in st.session_state:
     st.session_state["prediction_result"] = None
@@ -230,17 +223,18 @@ if predict_clicked:
                 payload = {
                     "trip_id": selected_trip_id,
                     "partition": chosen_partition,
+                    "search_radius_m": search_radius,
                     "use_viterbi": use_viterbi
                 }
                 
-                resp = requests.post(f"{backend_url}/predict", json=payload, timeout=30.0)
-                if resp.status_code != 200:
-                    resp = requests.post(f"{backend_url}/api/v1/predict", json=payload, timeout=30.0)
+                resp = requests.post(f"{backend_url}/predict", json=payload, timeout=300.0)
+                if resp.status_code == 404:
+                    resp = requests.post(f"{backend_url}/api/v1/predict", json=payload, timeout=300.0)
                 
                 if resp.status_code == 200:
                     res_data = resp.json()
                     st.session_state["prediction_result"] = res_data
-                    st.session_state["last_trip_id"] = selected_trip_id
+                    st.session_state["last_trip_id"] = request_key
                     st.session_state["run_time"] = time.time() - t_start
                 else:
                     st.error(f"Prediction failed with status {resp.status_code}: {resp.text}")
@@ -249,7 +243,7 @@ if predict_clicked:
 
 # Display Results
 res = st.session_state.get("prediction_result")
-if res and st.session_state.get("last_trip_id") == selected_trip_id:
+if res and st.session_state.get("last_trip_id") == request_key:
     metrics = res.get("metrics") or {}
     total_arcs = res.get("total_arcs", len(res.get("predicted_arcs", [])))
     latency_ms = res.get("inference_time_ms", 0.0)
@@ -302,7 +296,7 @@ if res and st.session_state.get("last_trip_id") == selected_trip_id:
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-value">{f1_display}</div>
-            <div class="metric-label">Sequence F1 Score</div>
+            <div class="metric-label">Road-set F1</div>
         </div>
         """, unsafe_allow_html=True)
     with c5:
@@ -313,6 +307,10 @@ if res and st.session_state.get("last_trip_id") == selected_trip_id:
         </div>
         """, unsafe_allow_html=True)
 
+    coverage = metrics.get("evaluation_coverage")
+    if coverage is not None:
+        st.caption(f"Accuracy uses {metrics.get('evaluation_observations', 0):,} aligned observations ({coverage:.1%} coverage). Labels are approximate. Road-set F1 ignores order.")
+    st.caption(f"Unmatched GPS points: {metrics.get('unmatched_observations', 0)} · Decoder restarts: {metrics.get('decoder_restarts', 0)}")
     st.markdown("<br>", unsafe_allow_html=True)
 
     # ---------------------------------------------------------
@@ -331,12 +329,12 @@ if res and st.session_state.get("last_trip_id") == selected_trip_id:
         m = folium.Map(
             location=[avg_lat, avg_lon],
             zoom_start=14,
-            tiles="OpenStreetMap"
+            tiles=None
         )
 
         # 1. Predicted Snapped Route (Emerald Green Polyline)
         folium.PolyLine(
-            coords,
+            res.get("predicted_segments") or coords,
             color="#10b981",
             weight=5,
             opacity=0.9,
@@ -372,7 +370,7 @@ if res and st.session_state.get("last_trip_id") == selected_trip_id:
         st_folium(m, width=None, height=520)
     else:
         st.info("Coordinates not returned in simplified format; attempting backend map embed...")
-        map_url = f"{backend_url}/map/{selected_trip_id}?partition={chosen_partition}"
+        map_url = backend_url + res.get("map_url", f"/map/{selected_trip_id}?partition={chosen_partition}")
         st.components.v1.iframe(map_url, height=520, scrolling=True)
 
     # ---------------------------------------------------------
@@ -383,7 +381,9 @@ if res and st.session_state.get("last_trip_id") == selected_trip_id:
     
     # Condense consecutive duplicate arcs for clear sequence inspection
     condensed_arcs = []
-    for arc in predicted_arcs:
+    for arc in res.get("expanded_route") or predicted_arcs:
+        if arc < 0:
+            continue
         if not condensed_arcs or condensed_arcs[-1] != arc:
             condensed_arcs.append(arc)
 

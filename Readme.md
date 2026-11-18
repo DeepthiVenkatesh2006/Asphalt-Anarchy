@@ -1,6 +1,8 @@
 
 # PathSnap - Map-Matching & Route Reconstruction (Asphalt-Anarchy)
 
+> **Current demo:** use [DEMO_READY.md](DEMO_READY.md) for the verified local rehearsal, evaluator trips and Windows/Mac launch commands. Older demonstration reports describe earlier code and metrics.
+
 Noisy GPS points -> candidate road arcs -> ML classifier -> HMM/Viterbi -> coherent route.
 FastAPI backend (Laptop 1) + evaluator UI (Laptop 2).
 
