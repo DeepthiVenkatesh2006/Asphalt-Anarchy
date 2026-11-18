@@ -1,0 +1,12 @@
+[
+  "distance_m",
+  "heading_delta_deg",
+  "projection_ratio",
+  "distance_rank",
+  "segment_length_m",
+  "speed_mps",
+  "dt_s",
+  "heading_valid",
+  "gap_before",
+  "zero_length_arc"
+]

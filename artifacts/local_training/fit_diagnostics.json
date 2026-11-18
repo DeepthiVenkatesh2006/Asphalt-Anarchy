@@ -1,0 +1,14 @@
+[
+  {
+    "model": "mlp_baseline",
+    "epochs": 26,
+    "epoch_cap": 35,
+    "reached_epoch_cap": false
+  },
+  {
+    "model": "mlp_tuned",
+    "epochs": 35,
+    "epoch_cap": 35,
+    "reached_epoch_cap": true
+  }
+]

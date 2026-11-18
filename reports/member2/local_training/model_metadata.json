@@ -1,0 +1,83 @@
+{
+  "model": "mlp",
+  "tuned_parameters": {
+    "hidden_layer_sizes": [
+      64,
+      32
+    ],
+    "alpha": 0.0006358358856676254,
+    "learning_rate_init": 0.0021992715112745254,
+    "max_iter": 35
+  },
+  "selected_tuned": true,
+  "baseline_cv": {
+    "model": "mlp",
+    "observation_macro_f1_mean": 0.7508238048895212,
+    "observation_macro_f1_std": 0.0526302590498522,
+    "top1_accuracy_mean": 0.837921831477232,
+    "top1_accuracy_std": 0.05344747604101674,
+    "candidate_log_loss_mean": 0.38192641465550964,
+    "candidate_log_loss_std": 0.10595921318385819,
+    "fit_seconds_mean": 8.240110774990171,
+    "fit_seconds_std": 1.2725889436510007,
+    "predict_seconds_mean": 0.019864949805196375,
+    "predict_seconds_std": 0.0018011331909579165
+  },
+  "tuned_cv": {
+    "observation_macro_f1_mean": 0.7551540217332502,
+    "observation_macro_f1_std": 0.048357858689693514,
+    "top1_accuracy_mean": 0.8370929167293409,
+    "top1_accuracy_std": 0.054640318559687394,
+    "candidate_log_loss_mean": 0.3820019756106731,
+    "candidate_log_loss_std": 0.11275671052740664,
+    "fit_seconds_mean": 12.649794591596583,
+    "fit_seconds_std": 0.3776277678897299,
+    "predict_seconds_mean": 0.028239750204375014,
+    "predict_seconds_std": 0.0017555042212552322
+  },
+  "optimisation_objective": "mean aligned-label observation Macro F1 on group-aware training CV",
+  "tuning_folds": 3,
+  "comparison_folds": 5,
+  "feature_columns": [
+    "distance_m",
+    "heading_delta_deg",
+    "projection_ratio",
+    "distance_rank",
+    "segment_length_m",
+    "speed_mps",
+    "dt_s",
+    "heading_valid",
+    "gap_before",
+    "zero_length_arc"
+  ],
+  "preparation": {
+    "radius_m": 50,
+    "max_candidates": 8,
+    "gap_s": 60,
+    "reference_radius_m": 100,
+    "alignment_config": {
+      "method": "monotone_reference_v1",
+      "max_candidates": 8,
+      "max_label_distance_m": 50.0,
+      "ambiguity_margin_m": 3.0,
+      "heading_cost_m_per_degree": 0.05,
+      "route_advance_cost_m": 0.01
+    }
+  },
+  "candidate_classes": [
+    0,
+    1
+  ],
+  "model_file": "model_final.joblib",
+  "normalization": "clip positive-class scores to 1e-12 and normalize within observation for candidate log loss",
+  "fold_records": "fold_results.jsonl",
+  "evaluation_label_subset": "alignment_status == aligned; candidate misses retained",
+  "macro_f1_definition": "Per-trip macro over union of reference/predicted arc IDs, including unmatched -1; then mean across trips",
+  "log_loss_definition": "Conditional categorical log loss only where aligned reference road is in candidates; coverage separately reported",
+  "versions": {
+    "numpy": "2.5.5",
+    "pandas": "3.1.1",
+    "scikit-learn": "1.9.1",
+    "optuna": "5.1.0"
+  }
+}

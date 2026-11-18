@@ -1,0 +1,17 @@
+{
+  "reloaded_model_matches_saved_results": true,
+  "baseline_comparison_folds": 25,
+  "tuned_comparison_folds": 5,
+  "completed_bayesian_trials": 10,
+  "selected_variant": "tuned",
+  "verified_metrics": {
+    "top1_accuracy": 0.890678860358776,
+    "observation_macro_f1": 0.7731251852232539,
+    "evaluated_observations": 14215,
+    "evaluated_trips": 10,
+    "candidate_miss_rate": 0.0008441786844881616,
+    "candidate_log_loss": 0.28590072203946304,
+    "log_loss_observation_coverage": 0.9991558213155118,
+    "reference_coverage": 0.7419102296450939
+  }
+}
