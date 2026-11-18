@@ -10,9 +10,9 @@ __pycache__/
 *.egg-info/
 
 # Dataset (provided separately, never commit; evaluator data must stay out)
-data/
-data/raw/
-data/processed/
+/data/
+/data/raw/
+/data/processed/
 *.track
 *.nodes
 *.arcs
@@ -29,3 +29,6 @@ data/processed/
 # Large local artifacts
 artifacts/experiments/
 logs/
+
+# KNN artifacts retain fitted training examples; share privately with the team.
+/reports/member2/local_training/models/knn_*.joblib

@@ -36,14 +36,21 @@ def make_map(trip, output, *, max_roads=3000, max_points=1500):
     from src.features.spatial import RoadIndex
     index = RoadIndex(trip)
     centre = [float(np.median(trip.track[:, 1])), float(np.median(trip.track[:, 0]))]
-    result = folium.Map(location=centre, zoom_start=13)
+    result = folium.Map(location=centre, zoom_start=13, tiles=None)
+    # Use supplied road geometry: presentation does not depend on tile-server access.
+    result.get_root().html.add_child(folium.Element(
+        '<div style="position:fixed;bottom:28px;left:12px;z-index:9999;'
+        'background:white;padding:10px;border:1px solid #777;font:14px Arial">'
+        '<b>Provided road network</b><br>Grey: road segments<br>'
+        'Blue: GPS points<br>Green: reference route<br>'
+        'No background map downloads required</div>'))
     minxy = index.track_xy.min(axis=0) - 150
     maxxy = index.track_xy.max(axis=0) + 150
     road_ids = sorted(map(int, index.tree.query(box(*minxy, *maxxy))))
     # Sampling affects the background display only; candidate queries use all arcs.
     if len(road_ids) > max_roads:
         road_ids = np.asarray(road_ids)[np.linspace(0, len(road_ids)-1, max_roads, dtype=int)].tolist()
-    roads = folium.FeatureGroup(name=f'Road network background ({len(road_ids)} arcs shown)', show=False)
+    roads = folium.FeatureGroup(name=f'Road network background ({len(road_ids)} arcs shown)', show=True)
     for arc in road_ids:
         coords = trip.nodes[trip.arcs[arc]][:, ::-1].tolist()
         folium.PolyLine(coords, color='#777777', weight=2, opacity=.5).add_to(roads)
