@@ -48,12 +48,14 @@ class PredictRequest(BaseModel):
 
 class PredictResponse(BaseModel):
     trip_id: str
-    partition: str
+    partition: str = "student_test"
     status: str = "success"
     predicted_arcs: List[int]
+    predicted_coords: List[List[float]] = Field(default_factory=list, description="Ordered [[lat, lon], ...] along predicted road segments")
     total_arcs: int
     route_continuity: float
     inference_time_ms: float
+    metrics: Optional[EvaluationMetrics] = None
     map_url: str
 
 class HealthResponse(BaseModel):

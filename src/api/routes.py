@@ -18,7 +18,7 @@ from src.api.service import MapMatchingService
 from src.visualization.map_builder import build_folium_map
 
 logger = logging.getLogger("pathsnap.api")
-router = APIRouter(prefix="/api/v1", tags=["PathSnap"])
+router = APIRouter(tags=["PathSnap"])
 
 _service: Optional[MapMatchingService] = None
 
@@ -108,14 +108,17 @@ async def predict_trip(req: PredictRequest, service: MapMatchingService = Depend
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+    metrics = result["metrics"]
     return PredictResponse(
         trip_id=req.trip_id,
         partition=req.partition or "student_test",
         status="success",
         predicted_arcs=result["predicted_route"],
+        predicted_coords=result.get("predicted_coords", []),
         total_arcs=len(result["predicted_route"]),
-        route_continuity=result["metrics"]["route_continuity"],
-        inference_time_ms=result["metrics"]["inference_time_ms"],
+        route_continuity=metrics["route_continuity"],
+        inference_time_ms=metrics["inference_time_ms"],
+        metrics=EvaluationMetrics(**metrics),
         map_url=f"/api/v1/map/{req.trip_id}?partition={req.partition}"
     )
 

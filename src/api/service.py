@@ -279,6 +279,20 @@ class MapMatchingService:
             if not condensed_route or condensed_route[-1] != arc_id:
                 condensed_route.append(arc_id)
 
+        # Generate ordered [lat, lon] coordinates along predicted route
+        predicted_coords = []
+        for arc_id in condensed_route:
+            if arc_id < len(trip.arcs):
+                u = int(trip.arcs[arc_id, 0])
+                v = int(trip.arcs[arc_id, 1])
+                u_lat = round(float(trip.nodes[u, 1]), 6)
+                u_lon = round(float(trip.nodes[u, 0]), 6)
+                v_lat = round(float(trip.nodes[v, 1]), 6)
+                v_lon = round(float(trip.nodes[v, 0]), 6)
+                if not predicted_coords or predicted_coords[-1] != [u_lat, u_lon]:
+                    predicted_coords.append([u_lat, u_lon])
+                predicted_coords.append([v_lat, v_lon])
+
         return {
             "trip_id": trip_id,
             "partition": partition,
@@ -294,6 +308,7 @@ class MapMatchingService:
             },
             "predicted_route": predicted_route,
             "condensed_route": condensed_route,
+            "predicted_coords": predicted_coords,
             "preview_arcs": condensed_route[:20],
             "track": trip.track.tolist(),
             "nodes": trip.nodes.tolist(),

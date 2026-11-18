@@ -32,7 +32,9 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    app.include_router(api_router)
+    # Support both /api/v1/... and root-level /health, /trips, /predict
+    app.include_router(api_router, prefix="/api/v1")
+    app.include_router(api_router, prefix="")
 
     ui_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "ui"))
     if os.path.exists(ui_dir):
