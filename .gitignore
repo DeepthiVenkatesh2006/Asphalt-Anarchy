@@ -28,4 +28,5 @@ data/processed/
 
 # Large local artifacts
 artifacts/experiments/
+artifacts/maps/
 logs/
