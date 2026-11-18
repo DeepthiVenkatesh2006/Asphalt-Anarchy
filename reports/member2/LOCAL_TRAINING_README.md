@@ -5,10 +5,10 @@ This is a separate reproducible experiment run. It preserves the older benchmark
 ## Run
 
 ```bash
-python -m pip install -r requirements-training.txt
+python -m pip install -r requirements-runtime-lock.txt
 OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python -u -m src.models.local_training \
   --data-root data/processed/v1 \
-  --output-dir reports/member2/local_training \
+  --output-dir reports/member2/reproduced_run \
   --folds 5 --tuning-folds 3 --trials 10
 ```
 
@@ -38,7 +38,7 @@ Observation Macro F1 is computed separately for each trip, over the union of pre
 
 Categorical candidate log loss is calculated by clipping positive-class scores to 1e-12 and normalizing over the candidates of each observation. It is conditional on the derived reference being present; log-loss coverage and candidate miss rate are separately reported. Candidate binary Macro F1/log loss are secondary diagnostics on the eligible candidate table. These are different from observation/route metrics and must not be substituted for them.
 
-Member 3 still needs to add classifier-plus-decoder route continuity and sequence evaluation; classifier comparison does not complete the HMM requirement.
+Classifier-plus-decoder continuity and sequence evaluation are now available in `reports/decoder/student_test/`. See the consolidated technical PDF for the complete integrated comparison.
 
 ## Output files
 
@@ -55,7 +55,7 @@ Within `reports/member2/local_training/`:
 - Preparation manifests: exact dataset processing settings and per-trip projections.
 - MLP history JSON and plots: actual final-fit epoch histories, where available. No artificial curves for non-epoch models.
 
-Do not overwrite the team's top-level champion until the team has reviewed this run's results and agreed the new metric definitions. Model weights remain excluded from ordinary Git commits and can be shared as a local artifact bundle.
+The selected deployment bundle is committed in `artifacts/local_training/`. The private fitted KNN cache is excluded because it retains training examples. Keep the completed experiment evidence unchanged; use fresh output directories for reproduction.
 
 ## Generate the final report figures
 

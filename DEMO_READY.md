@@ -1,5 +1,7 @@
 # Two-laptop demonstration guide
 
+Use the integrated submission on branch `main`.
+
 The integrated project includes trained model scoring, graph-aware HMM/Viterbi reconstruction, FastAPI and interactive Leaflet route maps.
 
 ## Prepare both laptops

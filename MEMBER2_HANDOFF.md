@@ -22,11 +22,11 @@ Optuna TPE tuned only the CV-selected MLP, using ten trials on three group-aware
 
 ## Evaluation and model choice
 
-All 80 training trips were used for fitting/cross-validation. Student-test labels were loaded after model and parameter selection was frozen. Final comparison used the separate ten student-test trips; no evaluator-testing data was available or used.
+All 80 training trips were used for fitting/cross-validation. Student-test labels were loaded after model and parameter selection was frozen. Final comparison used the separate ten student-test trips; no evaluator-testing data was used for training or model selection.
 
 Selected model: tuned StandardScaler + MLP pipeline. Student-test Top-1 is 0.8906788604 (89.07%) and per-trip observation Macro F1 is 0.7731251852. Evaluation covers 14,215 confidently aligned derived reference observations out of 19,160 GPS observations (74.19% label coverage). Candidate misses remain in that accuracy/F1 denominator. Reference labels are approximate, not independently verified physical point truth. Conditional candidate log loss is 0.2859007220; its coverage is recorded separately. Candidate binary metrics differ from observation metrics.
 
-The final tuned fit reached its configured 35-epoch cap. Do not claim full convergence. Route continuity and HMM/Viterbi comparisons remain Member 3 work.
+The final tuned fit reached its configured 35-epoch cap. Do not claim full convergence. The integrated classifier-versus-HMM evaluation is complete; see `reports/decoder/student_test` and the consolidated technical PDF.
 
 ## Source map
 
@@ -38,12 +38,12 @@ The final tuned fit reached its configured 35-epoch cap. Do not claim full conve
 
 ## Setup and reproduction
 
-Use a separate virtual environment with Python 3.10 or later. Exact versions used for the actual run are in run_config.json and requirements-training-lock.txt. The lock file records that run environment; compatible wheels may not exist for every Python/platform combination.
+Use a separate virtual environment with Python >=3.12 for the pinned runtime. Exact versions used for the actual run are in run_config.json and requirements-training-lock.txt. The lock file records that run environment; compatible wheels may not exist for every Python/platform combination.
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements-training.txt
+python -m pip install -r requirements-runtime-lock.txt
 python -m pytest tests/models -q
 ```
 
