@@ -28,6 +28,7 @@ __pycache__/
 
 # Large local artifacts
 artifacts/experiments/
+artifacts/maps/
 logs/
 
 # KNN artifacts retain fitted training examples; share privately with the team.

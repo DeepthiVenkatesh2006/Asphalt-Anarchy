@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PathSnap - GPS Map Matching Evaluator Interface</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo-badge">PS</div>
+      <div>
+        <h1>PathSnap Evaluator Dashboard</h1>
+        <p class="subtitle">GPS Trajectory Map-Matching & Route Reconstruction System</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="connection-pill" id="conn-pill">
+        <span class="status-dot disconnected" id="status-dot"></span>
+        <span id="conn-text">Connecting to API...</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Sidebar Controls -->
+    <aside class="sidebar">
+      <div class="card">
+        <h3>Server & Network Setup</h3>
+        <label for="api-url">Laptop 1 API Base URL:</label>
+        <div class="input-group">
+          <input type="text" id="api-url" value="" placeholder="http://192.168.1.100:8000">
+          <button id="btn-reconnect" class="btn btn-secondary">Connect</button>
+        </div>
+        <small class="hint">Enter Laptop 1's IP address when running from Laptop 2.</small>
+      </div>
+
+      <div class="card">
+        <h3>Select Evaluation Trip</h3>
+        <label for="trip-select">Trip ID (Student Test Partitions):</label>
+        <select id="trip-select">
+          <option value="" disabled selected>Loading trips...</option>
+        </select>
+
+        <div class="checkbox-group">
+          <label>
+            <input type="checkbox" id="chk-viterbi" checked>
+            Enable HMM / Viterbi Decoding
+          </label>
+        </div>
+
+        <button id="btn-evaluate" class="btn btn-primary" disabled>
+          <span class="btn-text">Run Evaluation Pipeline</span>
+          <span class="spinner hidden" id="eval-spinner"></span>
+        </button>
+      </div>
+
+      <div class="card" id="trip-details-card">
+        <h3>Trip Metadata</h3>
+        <div class="meta-row"><span>Partition:</span><strong id="meta-partition">-</strong></div>
+        <div class="meta-row"><span>GPS Observations:</span><strong id="meta-points">-</strong></div>
+        <div class="meta-row"><span>Road Nodes:</span><strong id="meta-nodes">-</strong></div>
+        <div class="meta-row"><span>Road Arcs:</span><strong id="meta-arcs">-</strong></div>
+        <div class="meta-row"><span>Ground Truth Arcs:</span><strong id="meta-route">-</strong></div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <section class="content-pane">
+      <!-- Metrics Scorecard Banner -->
+      <div class="metrics-grid">
+        <div class="metric-card" id="card-acc">
+          <div class="metric-label">Observation Top-1 Accuracy</div>
+          <div class="metric-value" id="val-accuracy">--%</div>
+          <div class="metric-sub" id="sub-accuracy">Awaiting evaluation</div>
+        </div>
+        <div class="metric-card" id="card-cont">
+          <div class="metric-label">Route Continuity</div>
+          <div class="metric-value" id="val-continuity">--%</div>
+          <div class="metric-sub">Connected road transitions</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Candidate Miss Rate</div>
+          <div class="metric-value" id="val-missrate">--%</div>
+          <div class="metric-sub">Search radius coverage</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Inference Latency</div>
+          <div class="metric-value" id="val-latency">-- ms</div>
+          <div class="metric-sub">End-to-end execution</div>
+        </div>
+      </div>
+
+      <!-- Interactive Map Frame -->
+      <div class="map-container">
+        <div class="map-header">
+          <div class="map-title" id="map-heading">Interactive Route Visualization (Folium)</div>
+          <div class="map-legend-pills">
+            <span class="pill pill-gps">● Raw GPS</span>
+            <span class="pill pill-gt">━ Ground Truth</span>
+            <span class="pill pill-pred">━ Predicted Route</span>
+          </div>
+        </div>
+        <div class="map-wrapper">
+          <div class="map-placeholder" id="map-placeholder">
+            <p>Select a trip on the left and click <strong>Run Evaluation Pipeline</strong> to inspect the map matching result.</p>
+          </div>
+          <iframe id="map-frame" class="hidden" title="Folium Map"></iframe>
+        </div>
+      </div>
+
+      <!-- Predicted Route Sequence Drawer -->
+      <div class="card sequence-card">
+        <h3>Predicted Arc Sequence (Chronological)</h3>
+        <p class="hint">The sequence of road segment IDs (arc_id) identified by PathSnap's classifier & Viterbi decoder:</p>
+        <div class="route-tags" id="route-tags">
+          <em>No evaluation executed yet.</em>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <span>PathSnap Hackathon | Model: Trained Classifier + HMM Viterbi Decoder | Demo: Laptop 1 (API) & Laptop 2 (UI)</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

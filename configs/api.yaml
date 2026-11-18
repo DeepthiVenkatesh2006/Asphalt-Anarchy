@@ -1,0 +1,21 @@
+server:
+  host: "0.0.0.0"
+  port: 8000
+  title: "Asphalt-Anarchy PathSnap API"
+  version: "1.0.0"
+
+data:
+  root_dir: "../PathSnap/Student folder"
+  train_partition: "train"
+  test_partition: "student_test"
+
+artifacts:
+  model_weights: "artifacts/model_final.joblib"
+  model_metadata: "artifacts/model_metadata.json"
+  maps_dir: "artifacts/maps"
+
+inference:
+  search_radius_meters: 50.0
+  max_candidates_per_point: 8
+  gap_threshold_s: 60.0
+  beta_transition: 12.0
