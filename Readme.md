@@ -33,3 +33,5 @@ Install this component's dependencies with `python -m pip install -r requirement
 Raw and full processed datasets are not committed. Keep local data under `data/`, following the preparation instructions. The selected model is provided alongside the earlier artifact so teammates can explicitly choose the compatible version.
 
 The KNN fitted cache is kept out of the public repository because it retains training examples. KNN code, configurations and measured results are included; its fitted cache can be regenerated or shared within the team.
+
+Complete Member 2 source, model clarification, scoring API, test evidence and integration instructions are documented in [MEMBER2_HANDOFF.md](MEMBER2_HANDOFF.md).

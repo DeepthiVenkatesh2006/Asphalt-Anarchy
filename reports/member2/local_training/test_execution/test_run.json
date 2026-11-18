@@ -1,0 +1,6 @@
+{
+  "command": "python -m pytest tests/models -q --junitxml=reports/member2/local_training/test_execution/member2_tests.xml",
+  "return_code": 0,
+  "python": "3.15.2",
+  "scope": "Member 2 tests only; synthetic fixtures, no dataset needed"
+}

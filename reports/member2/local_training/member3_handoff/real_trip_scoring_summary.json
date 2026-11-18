@@ -1,0 +1,11 @@
+{
+  "trip_id": "00000000",
+  "total_scored_candidates": 9902,
+  "observations_with_candidates": 2503,
+  "preview_observations": 5,
+  "preview_candidate_rows": 36,
+  "probability_sums_equal_one": true,
+  "reference_labels_used": false,
+  "model_directory": "artifacts/local_training",
+  "note": "CSV is an output preview, not the full trip candidate dataset or decoded route."
+}
