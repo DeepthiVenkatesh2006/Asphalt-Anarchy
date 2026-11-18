@@ -1,0 +1,2 @@
+2026-11-18 16:14:55.199 WARNING streamlit.runtime.scriptrunner_utils.script_run_context: Thread 'MainThread': missing ScriptRunContext! This warning can be ignored when running in bare mode.
+LEAFLET DASHBOARD PASS. Iframe fields: ['srcdoc', 'scrolling', 'alt']

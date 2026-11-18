@@ -9,8 +9,8 @@ def build_folium_map(
     track = trip_result["track"]
     nodes = trip_result["nodes"]
     arcs = trip_result["arcs"]
-    route = trip_result["route"]
-    predicted_route = trip_result["predicted_route"]
+    route = []  # Reference geometry stays server-side.
+    predicted_route = trip_result.get("condensed_route", trip_result["predicted_route"])
     metrics = trip_result.get("metrics", {})
     trip_id = trip_result.get("trip_id", "Unknown")
 
@@ -25,14 +25,14 @@ def build_folium_map(
     m = folium.Map(
         location=[center_lat, center_lon],
         zoom_start=14,
-        tiles="OpenStreetMap"
+        tiles=None
     )
 
     # 1. Road Network Layer
     relevant_arc_ids = set(predicted_route) | set(route)
     road_layer = folium.FeatureGroup(name="1. Road Network (Local Arcs)", show=False)
     for arc_id in list(relevant_arc_ids)[:2000]:
-        if arc_id < len(arcs):
+        if 0 <= arc_id < len(arcs):
             u, v = arcs[arc_id]
             u_pt = [nodes[u][1], nodes[u][0]]
             v_pt = [nodes[v][1], nodes[v][0]]
@@ -76,7 +76,7 @@ def build_folium_map(
         gt_layer = folium.FeatureGroup(name="3. Reference Ground Truth Route", show=True)
         gt_segments = []
         for arc_id in route:
-            if arc_id < len(arcs):
+            if 0 <= arc_id < len(arcs):
                 u, v = arcs[arc_id]
                 gt_segments.append([nodes[u][1], nodes[u][0]])
                 gt_segments.append([nodes[v][1], nodes[v][0]])
@@ -95,10 +95,9 @@ def build_folium_map(
     pred_segments = []
     prev_arc = None
     for arc_id in predicted_route:
-        if arc_id != prev_arc and arc_id < len(arcs):
+        if arc_id != prev_arc and 0 <= arc_id < len(arcs):
             u, v = arcs[arc_id]
-            pred_segments.append([nodes[u][1], nodes[u][0]])
-            pred_segments.append([nodes[v][1], nodes[v][0]])
+            pred_segments.append([[nodes[u][1], nodes[u][0]], [nodes[v][1], nodes[v][0]]])
             prev_arc = arc_id
 
     if pred_segments:
@@ -116,7 +115,8 @@ def build_folium_map(
     m.fit_bounds([[min(lats), min(lons)], [max(lats), max(lons)]])
 
     # Floating Summary Card
-    acc = metrics.get("top1_accuracy", 0.0) * 100.0
+    acc = metrics.get("top1_accuracy")
+    acc_display = f"{acc * 100:.1f}%" if acc is not None else "N/A"
     cont = metrics.get("route_continuity", 0.0) * 100.0
     lat_ms = metrics.get("inference_time_ms", 0.0)
     legend_html = f"""
@@ -137,11 +137,10 @@ def build_folium_map(
     ">
         <h4 style="margin: 0 0 8px 0; font-size: 14px; color: #1d3557;">Trip {trip_id} Summary</h4>
         <div><span style="display:inline-block; width:12px; height:12px; border-radius:50%; background:#e63946; margin-right:6px;"></span> Raw GPS Observations ({len(track)})</div>
-        <div><span style="display:inline-block; width:18px; height:4px; background:#2a9d8f; margin-right:6px; vertical-align:middle;"></span> Reference Route (Ground Truth)</div>
         <div><span style="display:inline-block; width:18px; height:4px; background:#1d3557; margin-right:6px; vertical-align:middle;"></span> PathSnap Predicted Route</div>
         <div><span style="display:inline-block; width:18px; height:2px; background:#6c757d; margin-right:6px; vertical-align:middle;"></span> Local Road Arcs</div>
         <hr style="margin: 8px 0; border:0; border-top: 1px solid #ddd;">
-        <div><b>Top-1 Accuracy:</b> <span style="color:#2a9d8f; font-weight:bold;">{acc:.1f}%</span></div>
+        <div><b>Top-1 Accuracy:</b> <span style="color:#2a9d8f; font-weight:bold;">{acc_display}</span></div>
         <div><b>Route Continuity:</b> <span style="color:#1d3557; font-weight:bold;">{cont:.1f}%</span></div>
         <div><b>Inference Latency:</b> {lat_ms:.1f} ms</div>
     </div>

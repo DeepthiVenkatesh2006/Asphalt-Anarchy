@@ -1,0 +1,11 @@
+{
+  "tool": "streamlit.testing.v1.AppTest",
+  "native_leaflet": true,
+  "backend": "http://127.0.0.1:8000",
+  "partition": "evaluator_test",
+  "trip_id": "00000023",
+  "predict_button": "passed",
+  "gps_observations": 458,
+  "iframe_count": 1,
+  "exceptions": 0
+}
