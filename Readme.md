@@ -1,4 +1,4 @@
- README.md <<'EOF'
+
 # PathSnap - Map-Matching & Route Reconstruction (Asphalt-Anarchy)
 
 Noisy GPS points -> candidate road arcs -> ML classifier -> HMM/Viterbi -> coherent route.
@@ -17,4 +17,3 @@ FastAPI backend (Laptop 1) + evaluator UI (Laptop 2).
     pip install -r requirements.txt
 
 Data goes in data/raw/ (not committed).
-EOF
