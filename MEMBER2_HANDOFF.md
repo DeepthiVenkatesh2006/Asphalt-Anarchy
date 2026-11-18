@@ -55,7 +55,7 @@ OMP_NUM_THREADS=2 OPENBLAS_NUM_THREADS=2 python -u -m src.models.local_training 
 python -m src.models.training_report reports/member2/new_training_run
 ```
 
-Choose a fresh output directory. The supplied local_training directory is the completed evidence and should not be overwritten. run_config.json records seeds, all actual model parameters, held-out trip IDs and versions. Input checksums and copied processing manifests identify the source data without embedding it. bayesian_search.sqlite3 preserves the actual study. Models are saved with joblib; the scaler is already inside the final pipeline, so no separately fitted scaler file is required.
+Choose a fresh output directory. The supplied local_training directory is the completed evidence and should not be overwritten. run_config.json records seeds, all actual model parameters, held-out trip IDs and versions. configs/member2_models.json and configs/member2_tuning.json provide machine-readable model and search-space snapshots. Input checksums and copied processing manifests identify the source data without embedding it. bayesian_search.sqlite3 preserves the actual study. Models are saved with joblib; the scaler is already inside the final pipeline, so no separately fitted scaler file is required.
 
 ## Member 3 loading and scoring
 
