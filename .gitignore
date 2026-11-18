@@ -1,4 +1,4 @@
-.gitignore <<'EOF'
+
 # Python environments
 .venv/
 venv/
@@ -23,4 +23,4 @@ data/processed/
 # Large local artifacts
 artifacts/experiments/
 logs/
-EOF
+
