@@ -7,7 +7,7 @@ UI_ROOT = Path(__file__).resolve().parents[2] / 'ui'
 
 def render_leaflet_map(response):
     payload = {key: response.get(key, default) for key, default in [
-        ('trip_id', ''), ('predicted_segments', []), ('network_segments', []), ('gps_coords', [])]}
+        ('trip_id', ''), ('predicted_segments', []), ('network_segments', []), ('matched_coords', []), ('gps_coords', [])]}
     data = json.dumps(payload, allow_nan=False).replace('&', r'\u0026').replace('<', r'\u003c').replace('>', r'\u003e').replace('\u2028', r'\u2028').replace('\u2029', r'\u2029')
     css = (UI_ROOT / 'vendor/leaflet.css').read_text() + '\n' + (UI_ROOT / 'route-map.css').read_text()
     library = (UI_ROOT / 'vendor/leaflet.js').read_text()

@@ -1,0 +1,12 @@
+✔ teacher trips are present and nullable metrics remain unavailable (11.322917ms)
+✔ stale prediction cannot alter the newer request spinner or button (1.572458ms)
+✔ server error is displayed as text and clears old result (0.789792ms)
+✔ changing decoder while pending allows a new request (0.758917ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 128.920625

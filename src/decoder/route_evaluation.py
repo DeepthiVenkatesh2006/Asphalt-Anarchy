@@ -38,7 +38,7 @@ def evaluate_route(predicted_route, reference_route):
     )
 
     sequence_similarity = SequenceMatcher(
-        None, reference, predicted
+        None, reference, predicted, autojunk=False
     ).ratio()
 
     return {

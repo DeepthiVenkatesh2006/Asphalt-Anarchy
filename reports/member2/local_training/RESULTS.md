@@ -64,4 +64,4 @@ Reaching the configured epoch cap is a budget-limited fit; do not claim full con
 - model_final.joblib, model_metadata.json and feature_columns.json form the inference bundle.
 - Epoch histories and plots exist only for MLP fits that produced them; no artificial curves were generated.
 - Early stopping used internal row holdouts within fitting trips; the outer trip-wise validation remained untouched.
-- This is model-selection CV, not nested CV. Member 3 still needs route continuity and HMM/Viterbi comparisons.
+- This is model-selection CV, not nested CV. The measured route comparison is now available in reports/decoder/student_test; these classifier metrics remain unchanged.

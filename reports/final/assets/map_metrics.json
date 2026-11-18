@@ -1,0 +1,28 @@
+{
+  "trip_id": "00000007",
+  "partition": "student_test",
+  "metrics": {
+    "total_observations": 1354,
+    "top1_accuracy": 0.9265625,
+    "point_accuracy": 0.91796875,
+    "observation_macro_f1": 0.9450373364169828,
+    "observation_macro_precision": 0.9497747747747748,
+    "observation_macro_recall": 0.9419404454147059,
+    "classifier_observation_macro_f1": 0.8970458113980466,
+    "candidate_log_loss": 0.2128088441199945,
+    "log_loss_observation_coverage": 1.0,
+    "sequence_similarity": 0.622107969151671,
+    "route_set_f1": 0.952755905511811,
+    "route_continuity": 1.0,
+    "candidate_miss_rate": 0.0,
+    "sequence_length": 266,
+    "ground_truth_length": 123,
+    "sequence_f1": 0.952755905511811,
+    "inference_time_ms": 2463.508541986812,
+    "evaluation_observations": 1280,
+    "evaluation_coverage": 0.9453471196454948,
+    "unmatched_observations": 0,
+    "decoder_restarts": 0,
+    "evaluation_note": "Top-1 is classifier argmax; point accuracy/F1 use returned assignments on approximate aligned labels. Road-set F1 ignores order; sequence similarity is order-sensitive with autojunk disabled."
+  }
+}

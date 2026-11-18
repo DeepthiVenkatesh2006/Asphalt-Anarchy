@@ -28,3 +28,13 @@ def test_dataset_road_layer_preserves_route_coordinates():
     assert 'Supplied road network' in html
     assert 'supplied roads' in html
     assert '[[1, 2], [1, 3]]' in html
+
+
+def test_development_folium_reference_is_explicit_and_never_allowed_for_evaluator():
+    import pytest
+    from src.visualization.map_builder import build_folium_map
+    data=dict(trip_id='00000001',partition='student_test',track=[[0,0,1]],nodes=[[0,0],[.001,0]],arcs=[[0,1]],route=[0],predicted_route=[0])
+    assert 'Reference Ground Truth Route' in build_folium_map(data,include_reference=True).get_root().render()
+    data['partition']='evaluator_test'
+    with pytest.raises(ValueError,match='development'):
+        build_folium_map(data,include_reference=True)

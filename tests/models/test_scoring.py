@@ -1,5 +1,6 @@
 """Member 3 scoring contract tests using a tiny synthetic fitted classifier."""
 import json
+import hashlib
 import joblib
 import numpy as np
 import pandas as pd
@@ -18,6 +19,8 @@ def scorer(tmp_path):
     joblib.dump(model,tmp_path/'model_final.joblib')
     (tmp_path/'feature_columns.json').write_text(json.dumps(['distance_m','heading_delta_deg']))
     (tmp_path/'model_metadata.json').write_text(json.dumps({'feature_columns':['distance_m','heading_delta_deg']}))
+    names=['model_final.joblib','feature_columns.json','model_metadata.json']
+    (tmp_path/'artifact_manifest.json').write_text(json.dumps({'files':[{'path':name,'sha256':hashlib.sha256((tmp_path/name).read_bytes()).hexdigest()} for name in names]}))
     return CandidateScorer.from_directory(tmp_path)
 
 
@@ -63,3 +66,22 @@ def test_empty_candidate_frame_returns_explicit_empty_output(scorer,candidates):
     output=scorer.score_candidates(candidates.iloc[:0])
     assert output.empty
     assert list(output.columns)==['trip_id','obs_idx','candidate_idx','arc_id','candidate_score','candidate_probability']
+
+
+def test_modified_model_artifact_is_rejected_before_deserialization(tmp_path, scorer):
+    # scorer fixture created a valid bundle in the same directory.
+    with (tmp_path/'model_final.joblib').open('ab') as stream:
+        stream.write(b'corrupt')
+    with pytest.raises(ValueError, match='integrity'):
+        CandidateScorer.from_directory(tmp_path)
+
+
+def test_fresh_export_manifest_is_accepted_by_scorer(tmp_path):
+    from src.models.artifacts import write_artifact_manifest
+    model=make_pipeline(StandardScaler(),LogisticRegression(random_state=42))
+    model.fit([[0],[1],[9],[10]],[1,1,0,0])
+    joblib.dump(model,tmp_path/'model_final.joblib')
+    (tmp_path/'feature_columns.json').write_text('["distance_m"]')
+    (tmp_path/'model_metadata.json').write_text('{"feature_columns":["distance_m"]}')
+    write_artifact_manifest(tmp_path)
+    assert CandidateScorer.from_directory(tmp_path).feature_columns == ['distance_m']

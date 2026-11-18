@@ -184,8 +184,14 @@ with st.sidebar:
             st.write(f"**Duration:** `{selected_meta.get('duration_sec', 0.0):.0f}s`")
 
     st.markdown("---")
-    use_viterbi = st.checkbox("Enable HMM / Viterbi Sequence Decoder", value=True)
-    search_radius = st.slider("Candidate Search Radius (meters)", min_value=20, max_value=100, value=50, step=5)
+    final_evaluation = chosen_partition == "evaluator_test"
+    use_viterbi = st.checkbox("Enable HMM / Viterbi Sequence Decoder", value=True, disabled=final_evaluation, key=f"decoder_{chosen_partition}")
+    if final_evaluation:
+        use_viterbi = True
+        st.caption("Final evaluator settings are frozen. Use student_test for comparisons.")
+    search_radius = st.slider("Candidate Search Radius (meters)", min_value=20, max_value=100, value=50, step=5, disabled=final_evaluation, key=f"radius_{chosen_partition}")
+    if final_evaluation:
+        search_radius = 50
 
 # -------------------------------------------------------------
 # MAIN PANEL: Demonstration & Predictions
@@ -213,6 +219,8 @@ if "last_trip_id" not in st.session_state:
     st.session_state["last_trip_id"] = None
 
 if predict_clicked:
+    st.session_state["prediction_result"] = None
+    st.session_state["last_trip_id"] = None
     if not backend_online:
         st.error(f"Cannot execute prediction: Backend at `{backend_url}` is unreachable. Please verify Laptop 1.")
     else:
@@ -259,7 +267,7 @@ if res and st.session_state.get("last_trip_id") == request_key:
     st.markdown("### 📊 Performance & Evaluation Metrics")
     c1, c2, c3, c4, c5 = st.columns(5)
     
-    top1_acc = metrics.get("top1_accuracy")
+    top1_acc = metrics.get("point_accuracy", metrics.get("top1_accuracy"))
     top1_display = f"{top1_acc * 100:.2f}%" if top1_acc is not None else "N/A"
     
     continuity = metrics.get("route_continuity") or res.get("route_continuity", 0.0)
@@ -275,7 +283,7 @@ if res and st.session_state.get("last_trip_id") == request_key:
         st.markdown(f"""
         <div class="metric-card">
             <div class="metric-value">{top1_display}</div>
-            <div class="metric-label">Top-1 Accuracy</div>
+            <div class="metric-label">Point Accuracy</div>
         </div>
         """, unsafe_allow_html=True)
     with c2:
@@ -307,6 +315,9 @@ if res and st.session_state.get("last_trip_id") == request_key:
         </div>
         """, unsafe_allow_html=True)
 
+    def show_percent(value):
+        return f"{value:.2%}" if value is not None else "N/A"
+    st.caption(f"Classifier Top-1: {show_percent(metrics.get('top1_accuracy'))} · Returned-point Macro F1: {show_percent(metrics.get('observation_macro_f1'))} · Order-sensitive sequence similarity: {show_percent(metrics.get('sequence_similarity'))}")
     coverage = metrics.get("evaluation_coverage")
     if coverage is not None:
         st.caption(f"Accuracy uses {metrics.get('evaluation_observations', 0):,} aligned observations ({coverage:.1%} coverage). Labels are approximate. Road-set F1 ignores order.")
@@ -363,7 +374,7 @@ else:
     ---
     #### 🏗️ System Workflow Architecture
     ```
-    [GPS Coordinates] ──► [Candidate Arc Search] ──► [ML Candidate Classifier] ──► [HMM / Viterbi Decoder] ──► [Folium Map & Scorecard]
+    [GPS Coordinates] ──► [Candidate Arc Search] ──► [ML Candidate Classifier] ──► [HMM / Viterbi Decoder] ──► [Leaflet Map & Scorecard]
          (Track)               (Radius = 50m)             (Score: P(arc|point))          (Sequence Optimization)        (Laptop 2 Dashboard)
     ```
     """)

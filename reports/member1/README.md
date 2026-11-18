@@ -92,4 +92,4 @@ This method can be wrong at loops, parallel roads, intersections, noisy headings
 
 ## EDA evidence
 
-`dataset_inventory.csv`, `validation_errors.json`, `dataset_summary.png`, `representative_trip.png`, and `trip_00000001.html` are generated from the actual permitted dataset. Map background roads are capped at 3,000 for display; GPS markers are capped at 1,500. Candidate generation always uses the full road network. Open the HTML map in a browser with network access for map tiles and Leaflet assets.
+`dataset_inventory.csv`, `validation_errors.json`, `dataset_summary.png`, `representative_trip.png`, and `trip_00000001.html` are generated from the actual permitted dataset. Map background roads are capped at 3,000 for display; GPS markers are capped at 1,500. Candidate generation always uses the full road network. The EDA map does not request background tiles; its Folium JavaScript/CSS assets may need network access. The live Leaflet client bundles its own assets locally.

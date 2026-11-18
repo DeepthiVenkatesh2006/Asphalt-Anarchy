@@ -1,6 +1,7 @@
 """Member 3 inference interface: candidate identities in, mapped model scores out."""
 import argparse
 import json
+from importlib.metadata import version
 from pathlib import Path
 
 import joblib
@@ -8,6 +9,7 @@ import numpy as np
 import pandas as pd
 
 from src.models.local_training import probabilities
+from src.models.artifacts import verify_artifact_manifest
 
 KEY_COLUMNS=['trip_id','obs_idx','candidate_idx','arc_id']
 
@@ -28,9 +30,13 @@ class CandidateScorer:
     @classmethod
     def from_directory(cls,artifact_dir):
         root=Path(artifact_dir)
+        verify_artifact_manifest(root)
+        metadata=json.loads((root/'model_metadata.json').read_text())
+        expected=metadata.get('versions',{}).get('scikit-learn')
+        if expected and version('scikit-learn') != expected:
+            raise ValueError(f"Saved model requires scikit-learn {expected}; install requirements-runtime-lock.txt")
         return cls(joblib.load(root/'model_final.joblib'),
-                   json.loads((root/'feature_columns.json').read_text()),
-                   json.loads((root/'model_metadata.json').read_text()))
+                   json.loads((root/'feature_columns.json').read_text()), metadata)
 
     def score_candidates(self,records: pd.DataFrame,*,batch_size=20000) -> pd.DataFrame:
         """Return input keys plus raw binary scores and per-observation probabilities.

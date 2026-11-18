@@ -10,6 +10,8 @@ def test_evaluator_partition_and_data_override(tmp_path, monkeypatch):
     directory = tmp_path / 'evaluator_test' / '00000015'
     directory.mkdir(parents=True)
     (directory / '00000015.track').write_text('0 0 1\n0 0 11\n')
+    (directory / '00000015.nodes').write_text('0 0\n.001 0\n')
+    (directory / '00000015.arcs').write_text('0 1\n')
     monkeypatch.setenv('PATHSNAP_DATA_ROOT', str(tmp_path))
     service = MapMatchingService()
     trips = service.list_available_trips()

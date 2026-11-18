@@ -7,8 +7,8 @@ import numpy as np
 import pandas as pd
 
 
-MODEL_PATH = "artifacts/model_final.joblib"
-METADATA_PATH = "artifacts/model_metadata.json"
+MODEL_PATH = "artifacts/local_training/model_final.joblib"
+METADATA_PATH = "artifacts/local_training/model_metadata.json"
 CANDIDATES_PATH = "data/processed/v1/train/candidates.parquet"
 OUTPUT_PATH = "artifacts/train_candidate_probabilities.parquet"
 
@@ -18,14 +18,16 @@ BATCH_SIZE = 100_000
 def main():
     print("Loading trained MLP model...")
 
-    model = joblib.load(MODEL_PATH)
+    from src.models.scoring import CandidateScorer
+    scorer = CandidateScorer.from_directory(os.path.dirname(MODEL_PATH))
+    model = scorer.model
 
     with open(METADATA_PATH, "r") as file:
         metadata = json.load(file)
 
-    features = metadata["features"]
+    features = metadata["feature_columns"]
 
-    print("Model:", metadata["champion_model"])
+    print("Model:", metadata["model"])
     print("Features:", len(features))
     print("Loading candidate dataset...")
 

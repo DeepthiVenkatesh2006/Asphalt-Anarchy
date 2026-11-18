@@ -26,6 +26,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from threadpoolctl import threadpool_limits
+from src.models.artifacts import write_artifact_manifest
 
 MODEL_NAMES = ['logistic', 'knn', 'forest', 'histboost', 'mlp']
 
@@ -341,6 +342,7 @@ def run(args):
         versions={n:version(n) for n in ['numpy','pandas','scikit-learn','optuna']})
     (output/'model_metadata.json').write_text(json.dumps(metadata,indent=2))
     (output/'feature_columns.json').write_text(json.dumps(features,indent=2))
+    write_artifact_manifest(output)
     make_plots(output,comparisons,test_rows)
     (output/'COMPLETE').write_text('Training, CV, Bayesian tuning, student-test evaluation and export completed.\n')
     print(f'COMPLETE {output}',flush=True)
