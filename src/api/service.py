@@ -4,6 +4,7 @@ import os
 import time
 from pathlib import Path
 import numpy as np
+import pandas as pd
 from src.data.loaders import load_trip
 from src.features.build_features import prepare_trip, FEATURE_COLUMNS
 from src.features.spatial import RoadIndex
@@ -92,12 +93,25 @@ class MapMatchingService:
         for a in condensed:
             u, v = trip.arcs[a]
             segments.append([[float(trip.nodes[u, 1]), float(trip.nodes[u, 0])], [float(trip.nodes[v, 1]), float(trip.nodes[v, 0])]])
+        # Display context comes from the supplied graph, never reference labels.
+        # Cap geometry for browser responsiveness; inference still uses every road.
+        roads = prepared.road_segments
+        lo, hi = trip.track[:, :2].min(axis=0) - .002, trip.track[:, :2].max(axis=0) + .002
+        visible = roads[((roads.from_lon.between(lo[0], hi[0]) & roads.from_lat.between(lo[1], hi[1])) |
+                         (roads.to_lon.between(lo[0], hi[0]) & roads.to_lat.between(lo[1], hi[1])))]
+        selected_roads = roads[roads.arc_id.isin(condensed)].iloc[:5000]
+        context = visible[~visible.arc_id.isin(selected_roads.arc_id)]
+        budget = 5000 - len(selected_roads)
+        if len(context) > budget:
+            context = context.iloc[np.linspace(0, len(context)-1, budget, dtype=int)] if budget else context.iloc[:0]
+        visible = pd.concat([selected_roads, context])
+        network_segments = [[[float(r.from_lat), float(r.from_lon)], [float(r.to_lat), float(r.to_lon)]] for r in visible.itertuples()]
         return dict(trip_id=trip_id, partition=partition, metrics=dict(
             total_observations=len(predicted), top1_accuracy=accuracy, route_continuity=continuity,
             candidate_miss_rate=miss_rate, sequence_length=len(condensed), ground_truth_length=len(route),
             sequence_f1=f1, inference_time_ms=inference_ms, evaluation_observations=label_count,
             evaluation_coverage=coverage, unmatched_observations=predicted.count(-1), decoder_restarts=len(restarts),
             evaluation_note='Approximate aligned reference labels; road-set F1 is order-insensitive.'),
-            predicted_route=predicted, condensed_route=condensed, predicted_segments=segments,
+            predicted_route=predicted, condensed_route=condensed, predicted_segments=segments, network_segments=network_segments,
             predicted_coords=[point for segment in segments for point in segment],
             gps_coords=trip.track[:, [1, 0]].tolist(), preview_arcs=condensed[:20], track=trip.track.tolist(), nodes=trip.nodes.tolist(), arcs=trip.arcs.tolist(), route=[])

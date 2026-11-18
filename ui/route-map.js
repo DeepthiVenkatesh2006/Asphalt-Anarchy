@@ -3,6 +3,10 @@
   'use strict';
   const data = JSON.parse(document.getElementById('map-data').textContent);
   const map = L.map('route-map', {preferCanvas: true, zoomControl: true}).setView([0, 0], 2);
+  const networkLayer = L.featureGroup().addTo(map);
+  (data.network_segments || []).forEach(segment => {
+    L.polyline(segment, {color: '#727f89', weight: 5, opacity: .65}).bindTooltip('Supplied road network').addTo(networkLayer);
+  });
   const routeLayer = L.featureGroup().addTo(map);
   const gpsLayer = L.featureGroup().addTo(map);
   const endpoints = L.featureGroup().addTo(map);
@@ -36,7 +40,7 @@
   const plain = L.layerGroup();
   const street = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
     attribution: 'Tiles &copy; Esri — Sources: Esri, HERE, Garmin, USGS, NGA, EPA, NPS',
-    maxZoom: 19
+    maxZoom: 19, opacity: .35
   }).addTo(map);
   const status = document.getElementById('map-status');
   street.on('tileerror', () => {
@@ -49,7 +53,7 @@
     else status.textContent = 'Street background requires internet';
   });
   L.control.layers({'Offline background': plain, 'Street map (online)': street}, {
-    'Predicted roads': routeLayer, 'GPS observations': gpsLayer, 'Start / end': endpoints
+    'Supplied road network': networkLayer, 'Predicted roads': routeLayer, 'Raw GPS observations': gpsLayer, 'Start / end': endpoints
   }, {collapsed: false}).addTo(map);
   L.control.scale({imperial: false}).addTo(map);
   function fit() {

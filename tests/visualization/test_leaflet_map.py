@@ -19,3 +19,12 @@ def test_map_embedded_data_cannot_end_script_tag():
     html=render_leaflet_map(dict(trip_id='</script><script>alert(1)</script>', predicted_segments=[], gps_coords=[]))
     assert '</script><script>alert(1)</script>' not in html
     assert '\\u003c/script' in html
+
+
+def test_dataset_road_layer_preserves_route_coordinates():
+    data=dict(trip_id='00000023',predicted_segments=[[[1,2],[1,3]]],network_segments=[[[1,2],[1,3]],[[1,3],[1,4]]],gps_coords=[[1.0001,2.0001]])
+    html=render_leaflet_map(data)
+    assert 'network_segments' in html
+    assert 'Supplied road network' in html
+    assert 'supplied roads' in html
+    assert '[[1, 2], [1, 3]]' in html

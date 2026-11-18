@@ -1,4 +1,4 @@
-......................................................................   [100%]
+.......................................................................  [100%]
 =============================== warnings summary ===============================
 tests/models/test_local_training.py::test_all_five_models_accept_small_binary_training_set[histboost]
   /Users/pranav/Downloads/PathSnap_student_materials/Asphalt-Anarchy/.venv/lib/python3.15/site-packages/joblib/externals/loky/backend/context.py:134: UserWarning: Could not find the number of physical cores for the following reason:
@@ -15,4 +15,4 @@ tests/models/test_local_training.py::test_all_five_models_accept_small_binary_tr
     warnings.warn(
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
-70 passed, 3 warnings in 26.60s
+71 passed, 3 warnings in 26.97s

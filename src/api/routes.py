@@ -120,6 +120,7 @@ def predict_trip(req: PredictRequest, service: MapMatchingService = Depends(get_
         predicted_arcs=result["predicted_route"],
         expanded_route=result["condensed_route"],
         gps_coords=result["gps_coords"],
+        network_segments=result["network_segments"],
         predicted_coords=result.get("predicted_coords", []),
         predicted_segments=result.get("predicted_segments", []),
         total_arcs=len(result["predicted_route"]),
