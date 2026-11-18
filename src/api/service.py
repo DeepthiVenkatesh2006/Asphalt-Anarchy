@@ -10,6 +10,10 @@ import joblib
 
 from src.data.loaders import load_trip, Trip
 from src.features.build_features import prepare_trip, FEATURE_COLUMNS
+from src.decoder.hmm import prepare_hmm_inputs
+from src.decoder.viterbi import viterbi_decode
+from src.decoder.route_evaluation import evaluate_route
+from src.road_network.graph_builder import build_trip_graph
 
 logger = logging.getLogger("pathsnap.service")
 
@@ -164,59 +168,35 @@ class MapMatchingService:
             for c in candidates_by_obs[i]:
                 c["prob"] = c["score"] / tot
 
-        # 4. HMM / Viterbi Sequence Reconstruction
+        # 4. HMM / Viterbi Sequence Reconstruction using Member 3's official decoder
         if not use_viterbi or n_obs <= 1:
             predicted_route = [candidates_by_obs[i][0]["arc_id"] for i in range(n_obs)]
         else:
-            beta = 12.0  # Transition penalty parameter in meters
-            trellis_log = []
-            backpointers = []
+            raw_emissions = []
+            for t in range(n_obs):
+                raw_emissions.append([max(1e-12, c["score"]) for c in candidates_by_obs[t]])
 
-            # Step 0
-            first_cands = candidates_by_obs[0]
-            trellis_log.append([math.log(max(1e-12, c["prob"])) for c in first_cands])
-            backpointers.append([0] * len(first_cands))
-
-            # Recurrence
-            for t in range(1, n_obs):
-                prev_cands = candidates_by_obs[t - 1]
-                curr_cands = candidates_by_obs[t]
-                prev_scores = trellis_log[t - 1]
-
-                step_scores = []
-                step_ptrs = []
-
-                for curr_idx, curr_c in enumerate(curr_cands):
-                    best_prev_score = -1e12
-                    best_prev_idx = 0
-                    curr_emit_log = math.log(max(1e-12, curr_c["prob"]))
-
-                    for prev_idx, prev_c in enumerate(prev_cands):
+            raw_transitions = []
+            for t in range(n_obs - 1):
+                prev_cands = candidates_by_obs[t]
+                curr_cands = candidates_by_obs[t + 1]
+                mat = []
+                for prev_c in prev_cands:
+                    row = []
+                    for curr_c in curr_cands:
                         if prev_c["arc_id"] == curr_c["arc_id"]:
                             trans_prob = 0.95
                         elif prev_c["to_node"] == curr_c["from_node"]:
                             trans_prob = 0.85
                         else:
                             trans_prob = 1e-4
+                        row.append(trans_prob)
+                    mat.append(row)
+                raw_transitions.append(mat)
 
-                        tot_score = prev_scores[prev_idx] + math.log(trans_prob)
-                        if tot_score > best_prev_score:
-                            best_prev_score = tot_score
-                            best_prev_idx = prev_idx
-
-                    step_scores.append(best_prev_score + curr_emit_log)
-                    step_ptrs.append(best_prev_idx)
-
-                trellis_log.append(step_scores)
-                backpointers.append(step_ptrs)
-
-            # Backtrack
-            best_final_idx = int(np.argmax(trellis_log[-1]))
-            predicted_route = [0] * n_obs
-            curr_state = best_final_idx
-            for t in range(n_obs - 1, -1, -1):
-                predicted_route[t] = candidates_by_obs[t][curr_state]["arc_id"]
-                curr_state = backpointers[t][curr_state]
+            log_emissions, log_transitions = prepare_hmm_inputs(raw_emissions, raw_transitions)
+            best_indices = viterbi_decode(log_emissions, log_transitions)
+            predicted_route = [candidates_by_obs[t][idx]["arc_id"] for t, idx in enumerate(best_indices)]
 
         # 5. Route Continuity
         continuity_matches = 0
@@ -283,12 +263,9 @@ class MapMatchingService:
             top1_accuracy = float(correct / n_obs)
             candidate_miss_rate = float(misses / n_obs)
 
-            pred_set = set(predicted_route)
-            true_set = set(route)
-            overlap = len(pred_set & true_set)
-            prec = overlap / max(1, len(pred_set))
-            rec = overlap / max(1, len(true_set))
-            seq_f1 = float((2 * prec * rec) / (prec + rec)) if (prec + rec) > 0 else 0.0
+            # Member 3 route evaluation
+            route_eval = evaluate_route(predicted_route, route)
+            seq_f1 = float(route_eval["f1_score"])
         else:
             top1_accuracy = 1.0
             candidate_miss_rate = 0.0
