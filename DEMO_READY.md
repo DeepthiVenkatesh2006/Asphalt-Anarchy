@@ -44,7 +44,7 @@ Open **http://localhost:8501**. The model and datasets stay on Windows. The dash
 - With Viterbi off, selects the highest model score.
 - Loads references only after prediction for approximate aligned-reference evaluation; reports coverage and missing-reference metrics as unavailable.
 - Returns no raw reference geometry to the UI. Road-set F1 is order-insensitive, and is labelled accordingly.
-- Uses separate road segments for plotting rather than drawing artificial connectors; no external map tile requests are required. JavaScript/CSS components may still require internet on a fresh browser.
+- Uses native Leaflet with bundled local JavaScript/CSS, independent road segments, GPS dots, start/end markers, fit/fullscreen and layer controls. Street tiles use Esri; if unavailable, the viewer falls back to an offline background while route/GPS overlays remain usable. Raw reference geometry is never supplied to the map.
 - Sends the chosen search radius and clears stale displayed results when backend/partition/settings change.
 
 ## Evidence and limits

@@ -8,9 +8,9 @@ import sys
 import time
 import requests
 import streamlit as st
-import folium
-from folium import plugins
-from streamlit_folium import st_folium
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from src.visualization.leaflet_map import render_leaflet_map
 
 # Page configuration
 st.set_page_config(
@@ -314,64 +314,14 @@ if res and st.session_state.get("last_trip_id") == request_key:
     st.markdown("<br>", unsafe_allow_html=True)
 
     # ---------------------------------------------------------
-    # Folium Map Visualization
+    # Native Leaflet route map, bundled locally for reliable demonstrations.
     # ---------------------------------------------------------
-    st.markdown("### 🗺️ Interactive Route Map")
-    
-    coords = res.get("predicted_coords", [])
-    
-    if coords and len(coords) >= 2:
-        # Determine center
-        avg_lat = sum(p[0] for p in coords) / len(coords)
-        avg_lon = sum(p[1] for p in coords) / len(coords)
-
-        # Create Folium Map with OpenStreetMap basemap
-        m = folium.Map(
-            location=[avg_lat, avg_lon],
-            zoom_start=14,
-            tiles=None
-        )
-
-        # 1. Predicted Snapped Route (Emerald Green Polyline)
-        folium.PolyLine(
-            res.get("predicted_segments") or coords,
-            color="#10b981",
-            weight=5,
-            opacity=0.9,
-            tooltip=f"Predicted Route: {total_arcs} road segments"
-        ).add_to(m)
-
-        # 2. Start Marker (Green Pin / Circle)
-        start_pt = coords[0]
-        folium.Marker(
-            location=start_pt,
-            popup=f"<b>Trip Start</b><br>Lat: {start_pt[0]:.6f}<br>Lon: {start_pt[1]:.6f}",
-            tooltip="Trip Start",
-            icon=folium.Icon(color="green", icon="play", prefix="fa")
-        ).add_to(m)
-
-        # 3. End Marker (Red Pin / Circle)
-        end_pt = coords[-1]
-        folium.Marker(
-            location=end_pt,
-            popup=f"<b>Trip Destination</b><br>Lat: {end_pt[0]:.6f}<br>Lon: {end_pt[1]:.6f}",
-            tooltip="Trip End",
-            icon=folium.Icon(color="red", icon="flag-checkered", prefix="fa")
-        ).add_to(m)
-
-        # Fit bounds to trajectory extent
-        m.fit_bounds([[min(p[0] for p in coords), min(p[1] for p in coords)],
-                      [max(p[0] for p in coords), max(p[1] for p in coords)]])
-
-        # Add fullscreen control
-        plugins.Fullscreen(position="topleft").add_to(m)
-
-        # Render Folium in Streamlit
-        st_folium(m, width=None, height=520)
+    st.markdown("### 🗺️ Route map · Leaflet")
+    map_html = render_leaflet_map(res)
+    if hasattr(st, "iframe"):
+        st.iframe(map_html, height=620, alt="Leaflet map of predicted roads and GPS observations")
     else:
-        st.info("Coordinates not returned in simplified format; attempting backend map embed...")
-        map_url = backend_url + res.get("map_url", f"/map/{selected_trip_id}?partition={chosen_partition}")
-        st.components.v1.iframe(map_url, height=520, scrolling=True)
+        st.components.v1.html(map_html, height=620, scrolling=False)
 
     # ---------------------------------------------------------
     # Road Arc Sequence & Technical Verification Details

@@ -100,4 +100,4 @@ class MapMatchingService:
             evaluation_note='Approximate aligned reference labels; road-set F1 is order-insensitive.'),
             predicted_route=predicted, condensed_route=condensed, predicted_segments=segments,
             predicted_coords=[point for segment in segments for point in segment],
-            preview_arcs=condensed[:20], track=trip.track.tolist(), nodes=trip.nodes.tolist(), arcs=trip.arcs.tolist(), route=[])
+            gps_coords=trip.track[:, [1, 0]].tolist(), preview_arcs=condensed[:20], track=trip.track.tolist(), nodes=trip.nodes.tolist(), arcs=trip.arcs.tolist(), route=[])

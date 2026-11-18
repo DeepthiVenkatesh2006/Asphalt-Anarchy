@@ -57,6 +57,7 @@ class PredictResponse(BaseModel):
     partition: str = "student_test"
     status: str = "success"
     predicted_arcs: List[int]
+    gps_coords: List[List[float]] = Field(default_factory=list)
     expanded_route: List[int] = Field(default_factory=list)
     predicted_segments: List[List[List[float]]] = Field(default_factory=list)
     predicted_coords: List[List[float]] = Field(default_factory=list, description="Ordered [[lat, lon], ...] along predicted road segments")

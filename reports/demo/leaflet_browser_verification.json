@@ -1,0 +1,6 @@
+{
+  "browser": "Headless Chrome, isolated profile",
+  "native_leaflet_rendered": true,
+  "gps_observations": 458,
+  "street_tiles_loaded": true
+}

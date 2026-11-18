@@ -16,6 +16,7 @@ from src.api.schemas import (
 )
 from src.api.service import MapMatchingService, PARTITIONS
 from src.visualization.map_builder import build_folium_map
+from src.visualization.leaflet_map import render_leaflet_map
 
 logger = logging.getLogger("pathsnap.api")
 router = APIRouter(tags=["PathSnap"])
@@ -118,6 +119,7 @@ def predict_trip(req: PredictRequest, service: MapMatchingService = Depends(get_
         status="success",
         predicted_arcs=result["predicted_route"],
         expanded_route=result["condensed_route"],
+        gps_coords=result["gps_coords"],
         predicted_coords=result.get("predicted_coords", []),
         predicted_segments=result.get("predicted_segments", []),
         total_arcs=len(result["predicted_route"]),
@@ -139,7 +141,6 @@ def get_map_view(
         raise HTTPException(status_code=422, detail="Use an eight-digit trip ID")
     try:
         result = service.process_trip(trip_id=trip_id, partition=partition, search_radius_m=search_radius_m, use_viterbi=use_viterbi)
-        m = build_folium_map(result)
-        return HTMLResponse(content=m.get_root().render(), status_code=200)
+        return HTMLResponse(content=render_leaflet_map(result), status_code=200)
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Could not render map for trip {trip_id}: {str(e)}")
