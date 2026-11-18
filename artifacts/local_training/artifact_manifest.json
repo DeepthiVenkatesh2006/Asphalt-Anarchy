@@ -1,0 +1,43 @@
+{
+  "format_version": 1,
+  "model": "StandardScaler + tuned MLPClassifier",
+  "feature_count": 10,
+  "preprocessing_embedded_in_model": true,
+  "files": [
+    {
+      "path": "README.md",
+      "size_bytes": 1029,
+      "sha256": "d4e6b54e7ade14846bbcfa5e202d7560a829496853e259e51c33ddb6adb654aa"
+    },
+    {
+      "path": "feature_columns.json",
+      "size_bytes": 185,
+      "sha256": "6a49a7e1d847101f267dd07d10a6bbca3caa42cf9272bee2a01ecef8953333aa"
+    },
+    {
+      "path": "fit_diagnostics.json",
+      "size_bytes": 214,
+      "sha256": "cb69b18631d5af39aad4e71134fb2ed9590a567cc7cf900330305a0c4a30e851"
+    },
+    {
+      "path": "model_final.joblib",
+      "size_bytes": 77153,
+      "sha256": "84fab7ce6d3607346204e3d849caec8c630d1f5d9a2f08ca7cfa1ff132977e16"
+    },
+    {
+      "path": "model_metadata.json",
+      "size_bytes": 2720,
+      "sha256": "309a355ffbc97fe8929a729fc9b3729a8aeb68e1d8023f0d1c82a7bc57088f5e"
+    },
+    {
+      "path": "selection.json",
+      "size_bytes": 1414,
+      "sha256": "6be27eb75404b246d88fb29293f1e9ce632f8b9665f6a39e40ebaff968fb4f02"
+    },
+    {
+      "path": "verification.json",
+      "size_bytes": 562,
+      "sha256": "5c400d4834a63a50e9153c45ee518dce8d77cac078314a79127eb5adfedaf829"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "model": "mlp",
+  "sampler": "TPESampler",
+  "seed": 42,
+  "n_startup_trials": 3,
+  "completed_trials": 10,
+  "tuning_folds": 3,
+  "comparison_folds": 5,
+  "objective": "mean CV observation Macro F1 on aligned labels",
+  "max_iter_all_configurations": 35,
+  "search_space": {
+    "architecture": {
+      "name": "CategoricalDistribution",
+      "attributes": {
+        "choices": [
+          "32",
+          "32,16",
+          "64,32"
+        ]
+      }
+    },
+    "alpha": {
+      "name": "FloatDistribution",
+      "attributes": {
+        "step": null,
+        "low": 1e-05,
+        "high": 0.01,
+        "log": true
+      }
+    },
+    "learning_rate_init": {
+      "name": "FloatDistribution",
+      "attributes": {
+        "step": null,
+        "low": 0.0003,
+        "high": 0.005,
+        "log": true
+      }
+    }
+  },
+  "best_trial_number": 1,
+  "best_trial_objective": 0.7549495292639529,
+  "best_parameters": {
+    "hidden_layer_sizes": [
+      64,
+      32
+    ],
+    "alpha": 0.0006358358856676254,
+    "learning_rate_init": 0.0021992715112745254,
+    "max_iter": 35
+  }
+}
